@@ -6,7 +6,7 @@ import UserInfo from '../components/UserInfo.vue';
 
 const routes = [
   { path: '/', component: App },
-  { path: '/auth/redirect', component: RedirectHandler },
+  { path: '/redirect', component: RedirectHandler },
   { path: '/user-info', component: UserInfo },
   { path: '/profile', component: Profile },
 ];

@@ -1,40 +1,41 @@
-<script setup lang="ts">
-import { onMounted } from 'vue';
-import axios from 'axios';
+<template>
+  <div>Authenticating...</div>
+</template>
+
+<script lang="ts">
+import { defineComponent, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/auth.store'; // Assuming you're using Pinia for state management
 
-const router = useRouter();
+export default defineComponent({
+  setup() {
+    const router = useRouter();
+    const authStore = useAuthStore();
 
-onMounted(async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
-  
-  if (code) {
-    try {
-      const response = await axios.get(`http://localhost:3003/api/auth/redirect?code=${code}`);
-      
-      // Store the access token securely
-      localStorage.setItem('accessToken', response.data.accessToken);
-      
-      // Redirect to the /api/auth/me endpoint
-      const userInfoResponse = await axios.get('http://localhost:3003/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${response.data.accessToken}`
+    onMounted(async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+
+      if (token) {
+        // Store the token
+        authStore.setToken(token);
+
+        try {
+          // Fetch user info
+          await authStore.fetchUserInfo();
+          // Redirect to profile or dashboard
+          router.push('/profile');
+        } catch (error) {
+          console.error('Error fetching user info:', error);
+          router.push('/login');
         }
-      });
-      
-      // Store user info if needed
-      localStorage.setItem('userInfo', JSON.stringify(userInfoResponse.data));
-      
-      // Redirect to a component that displays user info
-      router.push('/user-info');
-    } catch (error) {
-      console.error('Login failed', error);
-      router.push('/login-error');
-    }
-  }
+      } else {
+        console.error('No token received');
+        router.push('/login');
+      }
+    });
+
+    return {};
+  },
 });
 </script>
-<template>
-  <div>Processing login...</div>
-</template>
