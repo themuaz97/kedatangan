@@ -31,9 +31,16 @@ export const redirect = (req: Request, res: Response) => {
         }
       });
 
-      const token = response.accessToken;
+      const token = response.accessToken
 
-      res.redirect(`${process.env.FRONTEND_URL}/redirect?token=${token}`);
+      res.cookie('auth_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'development',
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000
+      });
+
+      res.redirect(`${process.env.FRONTEND_URL}/profile`);
     } else {
       res.status(400).send('Invalid response from token acquisition');
     }
@@ -44,33 +51,30 @@ export const redirect = (req: Request, res: Response) => {
 };
 
 export const getLoggedUser = async (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
-    try {
-      const response = await pca.acquireTokenOnBehalfOf({
-        oboAssertion: token,
-        scopes: [`api://${process.env.CLIENT_ID}/User.Read`],
-      });
-      if (response && response.account) {
-        const user = await prisma.user.findUnique({
-          where: { email: response.account.username }
-        });
-        console.log('User found in database:', user);
-        res.json(user);
-      } else {
-        res.status(400).send('Invalid response from token acquisition');
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: req.user?.username
       }
-    } catch (error) {
-      console.error('Error during token acquisition:', error);
-      res.status(401).send('Unauthorized');
+    })
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).send('User not found');
     }
-  } else {
-    res.status(401).send('Unauthorized');
+  } catch (error: any) {
+    res.status(500).send(error);
   }
 };
 
 export const logout = (req: Request, res: Response) => {
-  const logoutUri = `${process.env.POST_LOGOUT_REDIRECT_URI}/oauth2/v2.0/logout?post_logout_redirect_uri=${process.env.POST_LOGOUT_REDIRECT_URI}`;
-  res.redirect(logoutUri);
+  // Clear the auth token cookie
+  res.clearCookie('auth_token');
+
+  // Construct the Microsoft logout URL
+  const logoutUri = `https://login.microsoftonline.com/${process.env.TENANT_ID}/oauth2/v2.0/logout?post_logout_redirect_uri=${encodeURIComponent(process.env.POST_LOGOUT_REDIRECT_URI as string)}`;
+
+  // Send the logout URL to the client
+  res.json({ logoutUrl: logoutUri });
 };
