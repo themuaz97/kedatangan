@@ -1,0 +1,12 @@
+@import "./layout/main.css";
+@import "./layout/topbar.css";
+@import "./layout/sidebar.css";
+@import "./layout/footer.css";
+@import "./layout/layout.css";
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+

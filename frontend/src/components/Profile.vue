@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import router from '../routers';
 
 interface User {
   displayName: string;
@@ -27,7 +28,7 @@ const fetchUser = async () => {
 
 const logout = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, { withCredentials: true });
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/logout`, { withCredentials: true });
     const { logoutUrl } = response.data;
     
     // Redirect to Microsoft's logout URL
@@ -47,7 +48,7 @@ onMounted(() => {
 
 <template>
   <div><h1>Profile</h1>
-    <div v-if="loading">
+    <div class="flex justify-center items-center h-screen" v-if="loading">
       Loading...
     </div>
     <div v-else-if="error">{{ error }}</div>
@@ -55,8 +56,8 @@ onMounted(() => {
       <p>User Info: {{ userInfo.displayName }}</p>
       <p>Email: {{ userInfo.email }}</p>
     </div>
-    <div>
-      <button @click="logout" style="margin-top: 10px;">Logout</button>
+    <div class="">
+      <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" @click="logout" style="margin-top: 10px;">Logout</button>
     </div>
   </div>
 </template>
