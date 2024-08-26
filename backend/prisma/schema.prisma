@@ -7,10 +7,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  displayName   String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model roles {
+  id         Int      @id @default(autoincrement())
+  role_name  String   @db.VarChar(50)
+  status     Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  users      users[]
+}
+
+model users {
+  id           Int            @default(autoincrement())
+  user_id      Int            @id
+  first_name   String
+  middle_name  String?
+  last_name    String
+  username     String         @unique
+  password     String? // Nullable, as it may not be used for SSO users
+  address      String?
+  gender       String?        @db.VarChar(10)
+  email        String         @unique
+  profile_img  String?        @db.Text
+  role_id      Int?
+  status       Int?
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  roles        roles?         @relation(fields: [role_id], references: [id])
+  auth_methods auth_methods[]
+  tokens       tokens[]
+}
+
+model auth_methods {
+  id          Int      @id @default(autoincrement())
+  provider    String   @db.VarChar(50) // 'internal', 'microsoft_sso', etc.
+  provider_id String?  @unique // Nullable, used for SSO (e.g., Microsoft's user ID)
+  user_id     Int
+  users       users    @relation(fields: [user_id], references: [user_id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@unique([user_id, provider])
+}
+
+model tokens {
+  id            Int      @id @default(autoincrement())
+  token         String   @db.Text // The actual JWT token
+  refresh_token String?  @db.Text // Optional refresh token if using refresh tokens
+  expires_at    DateTime // Token expiration time
+  user_id       Int
+  users         users    @relation(fields: [user_id], references: [user_id])
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 }

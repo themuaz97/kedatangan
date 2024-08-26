@@ -14,7 +14,7 @@ const routes = [
       {
         path: '/login',
         name: 'login',
-        component: () => import('@/components/Login.vue')
+        component: () => import('@/components/authentication/Login.vue')
       },
       {
         path: '/profile',
@@ -24,7 +24,7 @@ const routes = [
       {
         path: '/redirect',
         name: 'redirect',
-        component: () => import('@/components/Redirect.vue')
+        component: () => import('@/components/authentication/Redirect.vue')
       }
     ]
   }

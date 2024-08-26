@@ -2,16 +2,23 @@ import { NextFunction, Request, Response } from "express";
 import { pca } from "../config/msal.js";
 import { AccountInfo } from "@azure/msal-node";
 import jwt from 'jsonwebtoken';
+import prisma from "../db/prisma.js";
 
 declare global {
   namespace Express {
     interface Request {
       user?: AccountInfo;
     }
+
+    export interface Request {
+      users?: {
+        user_id: number;
+      }
+    }
   }
 }
 
-export const protectRoute = async (req: Request, res: Response, next: NextFunction) => {
+export const protectRouteMicrosoft = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.auth_token;
 
   if (!token) {
@@ -50,3 +57,37 @@ export const protectRoute = async (req: Request, res: Response, next: NextFuncti
     }
   }
 }
+
+
+export const protectRoute = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // 1. Get the JWT token from the request cookies
+    const token = req.cookies.jwt;
+
+    if (!token) {
+      return res.status(401).send("No token found, authorization denied");
+    }
+
+    // 2. Verify the token
+    const decoded = jwt.verify(token, process.env.SECRET_KEY!) as { userId: number };
+    const userId = decoded.userId;
+
+    // 3. Fetch the user from the database
+    const user = await prisma.users.findUnique({
+      where: { user_id: userId },
+      include: { roles: true }, // Include related models if needed
+    });
+
+    if (!user) {
+      return res.status(401).send("Invalid token, authorization denied");
+    }
+
+    // 4. Attach the user to the request object
+    req.users = user;
+
+    // 5. Call the next middleware or route handler
+    next();
+  } catch (error: any) {
+    res.status(500).send(error.message || 'An error occurred');
+  }
+};
