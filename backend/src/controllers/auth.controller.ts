@@ -4,6 +4,7 @@ import prisma from "../db/prisma.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/token.js";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -90,7 +91,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).send("Incorrect password");
     }
 
-    const token = await generateToken(user.user_id, res, "internal");
+    const token = await generateToken(user.user_id, res, "internal", "auth");
 
     res.status(200).json({
       username: user.username,
@@ -104,7 +105,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    res.cookie("jwt", "", {maxAge: 0,});
+    res.cookie("jwt", "", { maxAge: 0 });
 
     const token = req.cookies.jwt;
 
@@ -123,7 +124,7 @@ export const logout = async (req: Request, res: Response) => {
 
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error: any) {
-    console.log('error in logout', error.message);
+    console.log("error in logout", error.message);
     res.status(500).json({ error: "Failed to logout" });
   }
 };
@@ -131,21 +132,130 @@ export const logout = async (req: Request, res: Response) => {
 export const getLoggedUser = async (req: Request, res: Response) => {
   try {
     const user = await prisma.users.findFirst({
-      where : {user_id: req.users?.user_id},
-    })
+      where: { user_id: req.users?.user_id },
+    });
 
     if (!user) {
-      res.status(404).json({error: "User not found"});
+      res.status(404).json({ error: "User not found" });
     }
 
     res.status(200).json({
       user_id: user?.user_id,
       username: user?.username,
+      email: user?.email,
     });
   } catch (error: any) {
-    res.status(500).json({error: "Failed to get logged user"});
+    res.status(500).json({ error: "Failed to get logged user" });
   }
-}
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const user = await prisma.users.findUnique({ where: { email: email } });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const token = await generateToken(user.user_id, res, "internal", "reset");
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    // Create a Nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      host: "sandbox.smtp.mailtrap.io",
+      port: 2525,
+      auth: {
+        user: "9b81f2b6fa8179",
+        pass: "c020bc3a69c318"
+      }
+    });
+
+    // Email options
+    const mailOptions = {
+      from: "no-reply@yourdomain.com",
+      to: user.email,
+      subject: "Password Reset Request",
+      text: `Hello ${user.first_name},\n\nTo reset your password, please click the following link:\n${resetLink}\n\nIf you did not request a password reset, please ignore this email.\n\nBest regards,\nYour Company Name`,
+      html: `<p>Hello ${user.first_name},</p>
+             <p>To reset your password, please click the following link:</p>
+             <a href="${resetLink}">${resetLink}</a>
+             <p>If you did not request a password reset, please ignore this email.</p>
+             <p>Best regards,<br>Your Company Name</p>`,
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+      email: user.email,
+      message: "Check your email for the reset link",
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: "Error in forgot password" });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ error: "Token and new password are required" });
+    }
+
+    // Verify the token and extract the user ID
+    let decoded: any;
+    try {
+      decoded = jwt.verify(token, process.env.SECRET_KEY!);
+    } catch (err) {
+      return res.status(400).json({ error: "Invalid or expired token" });
+    }
+
+    const userId = decoded.userId;
+
+    // Check if the token exists in the database and has not expired
+    const tokenRecord = await prisma.tokens.findFirst({
+      where: {
+        token: token,
+        token_type: "reset",
+        user_id: userId,
+        expires_at: {
+          gte: new Date(),
+        },
+      },
+    });
+
+    if (!tokenRecord) {
+      return res.status(400).json({ error: "Invalid or expired token" });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password in the database
+    await prisma.users.update({
+      where: { user_id: userId },
+      data: { password: hashedPassword },
+    });
+
+    // Delete the token after successful password reset to prevent reuse
+    await prisma.tokens.delete({
+      where: { id: tokenRecord.id },
+    });
+
+    res.status(200).json({ message: "Password has been reset successfully" });
+  } catch (error: any) {
+    console.error("Error in reset password:", error);
+    res.status(500).json({ error: "Error in resetting password" });
+  }
+};
 
 export const loginMicrosoft = (req: Request, res: Response) => {
   const authCodeUrlParameters = {
@@ -224,7 +334,7 @@ export const logoutMicrosoft = (req: Request, res: Response) => {
   const logoutUri = `https://login.microsoftonline.com/${
     process.env.TENANT_ID
   }/oauth2/v2.0/logout?post_logout_redirect_uri=${encodeURIComponent(
-    process.env.POST_LOGOUT_REDIRECT_URI as string
+    process.env.BASE_URL as string
   )}`;
 
   // Send the logout URL to the client

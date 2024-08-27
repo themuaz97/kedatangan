@@ -9,22 +9,32 @@ const routes = [
       {
         path: '',
         name: 'home',
-        component: () => import('@/components/Home.vue')
+        component: () => import('@/views/pages/Home.vue')
       },
       {
         path: '/login',
         name: 'login',
-        component: () => import('@/components/authentication/Login.vue')
+        component: () => import('@/views/pages/authentication/Login.vue')
+      },
+      {
+        path: '/forgot-password',
+        name: 'forgot-password',
+        component: () => import('@/views/pages/authentication/ForgotPassword.vue')
+      },
+      {
+        path: '/reset-password',
+        name: 'reset-password',
+        component: () => import('@/views/pages/authentication/ResetPassword.vue')
       },
       {
         path: '/profile',
         name: 'profile',
-        component: () => import('@/components/Profile.vue')
+        component: () => import('@/views/pages/Profile.vue')
       },
       {
         path: '/redirect',
         name: 'redirect',
-        component: () => import('@/components/authentication/Redirect.vue')
+        component: () => import('@/views/pages/authentication/Redirect.vue')
       }
     ]
   }

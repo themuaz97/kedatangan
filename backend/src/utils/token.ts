@@ -7,7 +7,8 @@ const prisma = new PrismaClient();
 export const generateToken = async (
   userId: number,
   res: Response,
-  provider: "internal" | "microsoft_sso"
+  provider: "internal" | "microsoft_sso",
+  token_type: 'auth' | 'reset'
 ) => {
   // 1. Generate the JWT token
   const token = jwt.sign({ userId }, process.env.SECRET_KEY!, {
@@ -40,6 +41,7 @@ export const generateToken = async (
     data: {
       token: token,
       expires_at: expiresAt,
+      token_type,
       users: {
         connect: {
           user_id: userId, // Connect token to the correct user

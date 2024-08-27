@@ -51,11 +51,14 @@ model auth_methods {
 
 model tokens {
   id            Int      @id @default(autoincrement())
-  token         String   @db.Text // The actual JWT token
-  refresh_token String?  @db.Text // Optional refresh token if using refresh tokens
-  expires_at    DateTime // Token expiration time
+  token         String   @db.Text
+  refresh_token String?  @db.Text
+  expires_at    DateTime
   user_id       Int
+  token_type    String   // 'auth' for authentication, 'reset' for password reset
   users         users    @relation(fields: [user_id], references: [user_id])
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
+
+  @@index([user_id])
 }

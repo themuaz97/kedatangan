@@ -5,7 +5,7 @@
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../../stores/auth.store'; // Assuming you're using Pinia for state management
+import { useAuthStore } from '../../../stores/auth.store'; // Assuming you're using Pinia for state management
 
 export default defineComponent({
   setup() {
