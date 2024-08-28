@@ -34,19 +34,19 @@
       </div>
       <div class="flex flex-col justify-center">
         <button
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          class="bg-purple-500 hover:bg-purple-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit"
         >
           Sign In
         </button>
           <button
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
             @click="loginMicrosoft"
           >
             Login with Microsoft
           </button>
         <a
-          class="inline-block text-center font-bold mt-2 text-sm text-blue-500 hover:text-blue-800"
+          class="inline-block text-center font-bold mt-2 text-sm hover:text-purple-800"
           href="/forgot-password"
         >
           Forgot Password?
@@ -83,7 +83,7 @@ const login = async () => {
     });
 
     if (response.ok) {
-      router.push('/profile');
+      await router.push('/profile');
     } else {
       const errorData = await response.json();
       console.error('Login failed:', errorData.message);

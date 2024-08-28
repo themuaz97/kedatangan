@@ -3,17 +3,23 @@
   flex-direction: column;
   height: 100vh;
 }
+
 .content {
   display: flex;
   flex: 1;
+  transition: margin-left 0.3s ease; /* Smooth transition for content shift */
 }
+
+.content-shifted {
+  margin-left: 250px; /* Shift content when sidebar is open */
+}
+
 .main-content {
   display: flex;
   flex: 1;
   padding: 20px;
   align-items: center;
   justify-content: center;
-  margin: auto;
   width: 100%;
-  height: 90%;
+  height: 100%;
 }

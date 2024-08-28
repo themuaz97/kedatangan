@@ -2,25 +2,40 @@
   width: 300px;
   background-color: #222;
   color: white;
-  height: 100vh;
+  position: fixed;
+  left: -300px;
+  top: 0;
+  height: 100%;
   padding: 20px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
   margin-top: 60px;
-  display: flex;
-  align-items: baseline;
+  transition: transform 0.3s ease, left 0.3s ease;
 }
+
+.sidebar-open {
+  left: 0; /* Slide in to view */
+  transform: translateX(0);
+}
+
 .sidebar ul {
   list-style: none;
   padding: 0;
   width: 100%;
 }
-.sidebar ul li {
-  margin-top: 15px;
-  margin-bottom: 15px;
+.sidebar li {
   width: 100%;
-  background: #023;
+  padding: 10px;
+  transition: background-color 0.3s, color 0.3s;
 }
+
+.sidebar li:hover {
+  background-color: #6b21a8; /* Light gray background on hover */
+  color: #ffffff; /* Blue text color on hover */
+  border-radius: 10px;
+}
+
 .sidebar ul li a {
-  color: white;
   text-decoration: none;
-  width: 100%;
+  color: inherit; /* Inherit color from parent */
+  display: block; /* Make link occupy the full list item area */
 }

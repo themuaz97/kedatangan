@@ -220,6 +220,13 @@ export const resetPassword = async (req: Request, res: Response) => {
 
     const userId = decoded.userId;
 
+    // Check if the user exists in the database
+    const user = await prisma.users.findUnique({ where: { user_id: userId } });
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
     // Check if the token exists in the database and has not expired
     const tokenRecord = await prisma.tokens.findFirst({
       where: {

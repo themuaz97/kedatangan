@@ -1,5 +1,5 @@
 <template>
-  <aside class="sidebar">
+  <aside :class="['sidebar', { 'sidebar-open': isOpen }]">
     <ul>
       <li><router-link to="/">Dashboard</router-link></li>
       <li><router-link to="/login">Login</router-link></li>
@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts" setup>
+defineProps<{ isOpen: boolean }>();
 </script>
 
 <style scoped>

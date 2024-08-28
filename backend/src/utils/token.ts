@@ -1,8 +1,7 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../db/prisma.js";
+import { deleteExpiredTokens } from "./expiredToken.js";
 
 export const generateToken = async (
   userId: number,
@@ -10,6 +9,9 @@ export const generateToken = async (
   provider: "internal" | "microsoft_sso",
   token_type: 'auth' | 'reset'
 ) => {
+  // Delete expired tokens
+  await deleteExpiredTokens();
+
   // 1. Generate the JWT token
   const token = jwt.sign({ userId }, process.env.SECRET_KEY!, {
     expiresIn: "20m",
