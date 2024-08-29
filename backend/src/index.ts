@@ -4,6 +4,7 @@ import session from 'express-session';
 import dotenv from 'dotenv';
 import { authRouter } from './routers/auth.route.js';
 import cors from 'cors';
+import { indexRouter } from './routers/index.route.js';
 
 dotenv.config();
 
@@ -17,13 +18,14 @@ app.use(cors({
   credentials: true
 }))
 
-app.use(session({
-  secret: process.env.EXPRESS_SESSION_SECRET as string,
-  resave: false,
-  saveUninitialized: false
-}));
+// app.use(session({
+//   secret: process.env.EXPRESS_SESSION_SECRET as string,
+//   resave: false,
+//   saveUninitialized: false
+// }));
 
 app.use('/api/auth', authRouter)
+app.use('/api', indexRouter)
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {

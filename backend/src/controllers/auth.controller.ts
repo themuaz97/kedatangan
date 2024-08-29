@@ -93,11 +93,15 @@ export const login = async (req: Request, res: Response) => {
 
     const token = await generateToken(user.user_id, res, "internal", "auth");
 
-    res.status(200).json({
-      username: user.username,
-      email: user.email,
-      token: token,
-    });
+    if (token) {
+      res.status(200).json({
+        username: user.username,
+        email: user.email,
+        token: token,
+      });
+    } else {
+      res.status(500).send("Failed to generate token");
+    }
   } catch (error: any) {
     res.status(500).send(error);
   }

@@ -1,36 +1,37 @@
 <template>
   <div class="w-full max-w-xs">
-    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" @submit="login">
+    <form class="w-full p-6 rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8" @submit="login">
       <div class="mb-4">
         <label
-          class="block text-gray-700 text-sm font-bold mb-2"
+          class="block text-white text-sm font-bold mb-2"
           for="email"
         >
           Email
         </label>
         <input
           v-model="email"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           id="email"
           type="text"
           placeholder="Email"
         />
+        <p class="text-red-500 text-xs italic">Email is required.</p>
       </div>
       <div class="mb-6">
         <label
-          class="block text-gray-700 text-sm font-bold mb-2"
+          class="block text-white text-sm font-bold mb-2"
           for="password"
         >
           Password
         </label>
         <input
           v-model="password"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           id="password"
           type="password"
           placeholder="Password"
         />
-        <p class="text-red-500 text-xs italic">Please choose a password.</p>
+        <p class="text-red-500 text-xs italic">password is required.</p>
       </div>
       <div class="flex flex-col justify-center">
         <button
@@ -46,7 +47,7 @@
             Login with Microsoft
           </button>
         <a
-          class="inline-block text-center font-bold mt-2 text-sm hover:text-purple-800"
+          class="inline-block text-center text-white font-bold mt-2 text-sm hover:text-purple-800"
           href="/forgot-password"
         >
           Forgot Password?
@@ -82,12 +83,12 @@ const login = async () => {
       })
     });
 
+    const data = await response.json();
+
     if (response.ok) {
-      await router.push('/profile');
+      router.push('/profile');
     } else {
-      const errorData = await response.json();
-      console.error('Login failed:', errorData.message);
-      // Optionally, show an error message to the user
+      console.error('Login failed:', data.message);
     }
   } catch (error: any) {
     console.error('Network error:', error);

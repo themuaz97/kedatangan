@@ -34,6 +34,19 @@ const fetchUser = async () => {
   }
 };
 
+const getUser = async () => {
+  try {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
+      method: 'GET',
+      credentials: 'include', // Include cookies in the request
+    })
+
+
+  } catch (error: any) {
+    console.error('Error fetching user info:', error);
+  }
+}
+
 const logout = async () => {
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
@@ -53,6 +66,7 @@ const logout = async () => {
 
 onMounted(() => {
   fetchUser();
+  getUser();
 });
 </script>
 

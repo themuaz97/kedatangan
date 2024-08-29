@@ -21,6 +21,13 @@ export const generateToken = async (
   const expiresAt = new Date();
   expiresAt.setMinutes(expiresAt.getMinutes() + 20); // Token expires in 20 minutes
 
+  res.cookie("jwt", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "development", // Use secure cookies in development
+    sameSite: "strict",
+    maxAge: 20 * 60 * 1000, // 20 minutes in milliseconds
+  });
+
   // 3. Store the authentication method if not already existing
   const authMethod = await prisma.auth_methods.upsert({
     where: {
@@ -50,14 +57,6 @@ export const generateToken = async (
         },
       },
     },
-  });
-
-  // 5. Set the JWT token as an HTTP-only cookie
-  res.cookie("jwt", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "development", // Use secure cookies in production
-    sameSite: "strict",
-    maxAge: 20 * 60 * 1000, // 20 minutes in milliseconds
   });
 
   return token;
