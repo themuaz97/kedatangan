@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 
 const email = ref<string>("");
+const toast = useToast();
 
 const forgotPassword = async () => {
   try {
@@ -19,13 +21,13 @@ const forgotPassword = async () => {
     );
 
     if (response.ok) {
-      alert("Password reset email sent. Please check your inbox.");
+      toast.add({ severity: "success", summary: "Password reset email sent", detail: "Please check your inbox", life: 3000 });
     } else {
-      const errorData = await response.json();
-      console.error("Error resetting password:", errorData.message);
+      const { error } = await response.json();
+      toast.add({ severity: "error", summary: "Error", detail: error, life: 3000 });
     }
   } catch (error: any) {
-    console.error("Error resetting password:", error);
+    toast.add({ severity: "error", summary: "Error", detail: error.message, life: 3000 });
   }
 };
 </script>
@@ -68,7 +70,7 @@ const forgotPassword = async () => {
                   id="email"
                   name="email"
                   placeholder="Enter your email address"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
                   required
                   aria-describedby="email-error"
                 />
@@ -80,7 +82,7 @@ const forgotPassword = async () => {
             </div>
             <button
               type="submit"
-              class="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-purple-500 text-white hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
+              class="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-purple-500 text-white hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800"
             >
               Reset password
             </button>

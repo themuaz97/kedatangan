@@ -1,5 +1,7 @@
 <template>
+  
   <footer class="footer">
+    <Divider />
     <p>© 2024 Attendance System. All rights reserved.</p>
   </footer>
 </template>

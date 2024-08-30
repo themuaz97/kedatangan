@@ -1,6 +1,6 @@
 .sidebar {
   width: 300px;
-  background-color: #222;
+  background-color: #1f2937;
   color: white;
   position: fixed;
   left: -300px;
@@ -29,8 +29,8 @@
 }
 
 .sidebar li:hover {
-  background-color: #6b21a8; /* Light gray background on hover */
-  color: #ffffff; /* Blue text color on hover */
+  background-color: #6b21a8; 
+  color: #ffffff; 
   border-radius: 10px;
 }
 
@@ -38,4 +38,9 @@
   text-decoration: none;
   color: inherit; /* Inherit color from parent */
   display: block; /* Make link occupy the full list item area */
+}
+
+.sidebar ul li a:hover {
+  color: inherit;
+  display: block;
 }

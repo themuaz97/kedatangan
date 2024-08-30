@@ -11,7 +11,7 @@
 }
 
 .content-shifted {
-  margin-left: 250px; /* Shift content when sidebar is open */
+  margin-left: 300px; /* Shift content when sidebar is open */
 }
 
 .main-content {

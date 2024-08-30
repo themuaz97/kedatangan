@@ -10,6 +10,15 @@ interface User {
 const userInfo = ref<User | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
+const selectedCity = ref();
+const cities = ref([
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+]);
+const checked = ref(false);
 
 const fetchUser = async () => {
   try {
@@ -34,55 +43,20 @@ const fetchUser = async () => {
   }
 };
 
-const getUser = async () => {
-  try {
-    await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
-      method: 'GET',
-      credentials: 'include', // Include cookies in the request
-    })
-
-
-  } catch (error: any) {
-    console.error('Error fetching user info:', error);
-  }
-}
-
-const logout = async () => {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
-      method: 'POST',
-      credentials: 'include', // Include cookies in the request
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to logout');
-    } else {
-      router.push('/login');
-    }
-  } catch (error: any) {
-    console.log('error in logout', error.message);
-  }
-};
 
 onMounted(() => {
   fetchUser();
-  getUser();
 });
 </script>
 
 <template>
-  <div class="flex justify-center flex-col items-center">
-    <h1>Profile</h1>
-    <div class="flex justify-center items-center" v-if="loading">
-      Loading...
+  <div>
+    <Checkbox v-model="checked" binary />
+    <div class="card">
+      <h1>card</h1>
     </div>
-    <div v-else-if="error">{{ error }}</div>
-    <div v-else-if="userInfo">
-      <p>Email: {{ userInfo.email }}</p>
-      <p>Username: {{ userInfo.username }}</p>
-    </div>
-    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" @click="logout()" style="margin-top: 10px;">Logout</button>
-    <div>
+    <div class="my-6">
+      <Select v-model="selectedCity" :options="cities"  optionLabel="name" placeholder="Select a City" class="w-full md:w-56" />
     </div>
   </div>
 </template>

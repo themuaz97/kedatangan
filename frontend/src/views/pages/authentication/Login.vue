@@ -1,6 +1,51 @@
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router'; 
+import { useAuthStore } from '../../../stores/auth.store';
+import { useToast } from 'primevue/usetoast';
+
+const email = ref<string | null>(null);
+const password = ref<string | null>(null);
+const router = useRouter();
+const authStore = useAuthStore();
+const toast = useToast();
+
+const submitted = ref(false); // Track if form has been submitted
+
+const loginMicrosoft = () => {
+  window.location.href = "http://localhost:3003/api/auth/login";
+};
+
+const handleSubmit = async () => {
+  submitted.value = true; // Set submitted to true when form is submitted
+
+  // Validate the fields
+  if (!email.value || !password.value) {
+    return; // Don't proceed if fields are invalid
+  }
+
+  try {
+    const success = await authStore.login(email.value, password.value);
+    if (success) {
+      toast.add({ severity: 'success', summary: 'Login Successful', detail: 'You have successfully logged in.', life: 3000 });
+      router.push('/'); 
+    }
+  } catch (error: any) {
+    toast.add({ severity: 'error', summary: 'Login Failed', detail: error.message, life: 3000 });
+  }
+};
+
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    router.push('/');
+  }
+});
+
+</script>
+
 <template>
   <div class="w-full max-w-xs">
-    <form class="w-full p-6 rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8" @submit="login">
+    <form class="w-full p-6 rounded-lg shadow dark:border md:mt-0 sm:max-w-md bg-gray-800 dark:border-gray-700 sm:p-8" @submit.prevent="handleSubmit">
       <div class="mb-4">
         <label
           class="block text-white text-sm font-bold mb-2"
@@ -15,7 +60,7 @@
           type="text"
           placeholder="Email"
         />
-        <p class="text-red-500 text-xs italic">Email is required.</p>
+        <small v-if="submitted && !email" class="text-red-500 text-xs italic">Email is required.</small>
       </div>
       <div class="mb-6">
         <label
@@ -31,21 +76,21 @@
           type="password"
           placeholder="Password"
         />
-        <p class="text-red-500 text-xs italic">password is required.</p>
+        <small v-if="submitted && !password" class="text-red-500 text-xs italic">Password is required.</small>
       </div>
       <div class="flex flex-col justify-center">
         <button
-          class="bg-purple-500 hover:bg-purple-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          class="bg-purple-500 hover:bg-purple-700 focus:ring-purple-500 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit"
         >
           Sign In
         </button>
-          <button
-            class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
-            @click="loginMicrosoft"
-          >
-            Login with Microsoft
-          </button>
+        <button
+          class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+          @click="loginMicrosoft"
+        >
+          Login with Microsoft
+        </button>
         <a
           class="inline-block text-center text-white font-bold mt-2 text-sm hover:text-purple-800"
           href="/forgot-password"
@@ -56,43 +101,3 @@
     </form>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router'; // Ensure you import useRouter
-
-const email = ref<string>('');
-const password = ref<string>('');
-const router = useRouter(); // Initialize router
-
-const loginMicrosoft = () => {
-  window.location.href = "http://localhost:3003/api/auth/login";
-};
-
-const login = async () => {
-  try {
-    const response = await fetch('http://localhost:3003/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value
-      })
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      router.push('/profile');
-    } else {
-      console.error('Login failed:', data.message);
-    }
-  } catch (error: any) {
-    console.error('Network error:', error);
-    // Handle the error, maybe show a message to the user
-  }
-}
-</script>

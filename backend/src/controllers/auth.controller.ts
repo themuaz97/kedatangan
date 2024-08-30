@@ -16,6 +16,7 @@ export const register = async (req: Request, res: Response) => {
       email,
       password,
       confirmPassword,
+      profileImg
     } = req.body;
 
     if (
@@ -42,6 +43,8 @@ export const register = async (req: Request, res: Response) => {
     const salt = bcrypt.genSaltSync();
     const hashedPassword = bcrypt.hashSync(password, salt);
 
+    const profileImgUrl = `https://avatar.iran.liara.run/username?username=${firstName}+${lastName}`
+
     const newUser = await prisma.users.create({
       data: {
         user_id: userId,
@@ -50,6 +53,7 @@ export const register = async (req: Request, res: Response) => {
         username: username,
         email: email,
         password: hashedPassword,
+        profile_img: profileImgUrl,
         status: 1,
       },
     });
@@ -147,6 +151,7 @@ export const getLoggedUser = async (req: Request, res: Response) => {
       user_id: user?.user_id,
       username: user?.username,
       email: user?.email,
+      profile_img: user?.profile_img,
     });
   } catch (error: any) {
     res.status(500).json({ error: "Failed to get logged user" });

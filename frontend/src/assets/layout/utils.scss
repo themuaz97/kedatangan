@@ -1,0 +1,13 @@
+.card {
+  background: #1f1e1e;
+  border: 1px solid var(--surface-border);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 2px 5px 7px rgba(0, 0, 0, 0.02), 2px 5px 7px rgba(0, 0, 0, 0.05), 2px 5px 7px rgba(0, 0, 0, 0.08);
+
+  border-radius: $borderRadius;
+
+  &:last-child {
+      margin-bottom: 0;
+  }
+}
