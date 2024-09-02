@@ -4,7 +4,7 @@ import '@/assets/style.scss'
 import App from './App.vue'
 import router from './routers/index.ts'
 import { createPinia } from 'pinia';
-import { PrimeVue } from '@primevue/core';
+import PrimeVue from "primevue/config";
 import Aura from '@primevue/themes/aura';
 import Select from 'primevue/select';
 import Checkbox from 'primevue/checkbox';
@@ -32,6 +32,9 @@ import Divider from 'primevue/divider'
 import TabList from 'primevue/tablist'
 import TabPanels from 'primevue/tabpanels'
 import Tab from 'primevue/tab'
+import Column from 'primevue/column'
+import ColumnGroup from 'primevue/columngroup'
+import Row from 'primevue/row'
 
 const app = createApp(App);
 
@@ -47,6 +50,8 @@ app.use(createPinia());
 app.component('Button', Button)
 app.component('Card', Card)
 app.component('Checkbox', Checkbox)
+app.component('Column', Column)
+app.component('ColumnGroup', ColumnGroup)
 app.component('ConfirmDialog', ConfirmDialog)
 app.component('ConfirmPopup', ConfirmPopup)
 app.component('DataTable', DataTable)
@@ -60,6 +65,7 @@ app.component('Menu', Menu)
 app.component('Password', Password)
 app.component('Popover', Popover)
 app.component('RadioButton', RadioButton)
+app.component('Row', Row)
 app.component('Select', Select)
 app.component('Stepper', Stepper)
 app.component('Tab', Tab)

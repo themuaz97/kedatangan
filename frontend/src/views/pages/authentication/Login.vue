@@ -13,7 +13,7 @@ const toast = useToast();
 const submitted = ref(false); // Track if form has been submitted
 
 const loginMicrosoft = () => {
-  window.location.href = "http://localhost:3003/api/auth/login";
+  window.location.href = "http://localhost:3005/api/auth/login";
 };
 
 const handleSubmit = async () => {

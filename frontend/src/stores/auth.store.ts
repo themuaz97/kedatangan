@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(email: string, password: string): Promise<boolean> {
       try {
-        const response = await fetch('http://localhost:3003/api/auth/login', {
+        const response = await fetch('http://localhost:3005/api/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ export const useAuthStore = defineStore('auth', {
 
     async fetchUser(): Promise<void> {
       try {
-        const response = await fetch('http://localhost:3003/api/auth/me', {
+        const response = await fetch('http://localhost:3005/api/auth/me', {
           method: 'GET',
           credentials: 'include', // Include cookies in the request
         });

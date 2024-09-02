@@ -15,7 +15,7 @@ const getAccessToken = (): string => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:3003/api/auth/me', {
+    const response = await axios.get('http://localhost:3005/api/auth/me', {
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`
       }

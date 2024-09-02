@@ -17,24 +17,35 @@ model roles {
 }
 
 model users {
-  id           Int            @default(autoincrement())
-  user_id      Int            @id
-  first_name   String
-  middle_name  String?
-  last_name    String
-  username     String         @unique
-  password     String? // Nullable, as it may not be used for SSO users
-  address      String?
-  gender       String?        @db.VarChar(10)
-  email        String         @unique
-  profile_img  String?        @db.Text
-  role_id      Int?
-  status       Int?
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
-  roles        roles?         @relation(fields: [role_id], references: [id])
-  auth_methods auth_methods[]
-  tokens       tokens[]
+  id             Int             @default(autoincrement())
+  user_id        Int             @id
+  first_name     String
+  middle_name    String?
+  last_name      String
+  username       String          @unique
+  password       String? // Nullable, as it may not be used for SSO users
+  address        String?
+  gender         String?         @db.VarChar(10)
+  email          String          @unique
+  profile_img    String?         @db.Text
+  role_id        Int?
+  status         Int?
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
+  roles          roles?          @relation(fields: [role_id], references: [id])
+  auth_methods   auth_methods[]
+  tokens         tokens[]
+  attendance     attendance[]
+  tasks          tasks[]         @relation("AssignedTasks")
+  reports        reports[]
+  assigned_tasks tasks[]         @relation("AssignedBy")
+  notifications  notifications[]
+  companies      companies?      @relation(fields: [company_id], references: [id])
+  company_id     Int?
+  departments    departments?    @relation(fields: [dept_id], references: [id])
+  dept_id        Int?
+  positions      positions?      @relation(fields: [position_id], references: [id])
+  position_id    Int?
 }
 
 model auth_methods {
@@ -55,10 +66,122 @@ model tokens {
   refresh_token String?  @db.Text
   expires_at    DateTime
   user_id       Int
-  token_type    String   // 'auth' for authentication, 'reset' for password reset
+  token_type    String // 'auth' for authentication, 'reset' for password reset
   users         users    @relation(fields: [user_id], references: [user_id])
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
   @@index([user_id])
+}
+
+model attendance {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  date       DateTime
+  clock_in   DateTime
+  clock_out  DateTime?
+  users      users     @relation(fields: [user_id], references: [user_id])
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  @@index([user_id])
+}
+
+model tasks {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String    @db.Text
+  task_status String    @db.VarChar(50) // e.g., 'pending', 'in-progress', 'completed'
+  due_date    DateTime?
+  assigned_to Int // The employee assigned to the task
+  assigned_by Int // The boss who assigned the task
+  status      Int?
+  users       users     @relation("AssignedTasks", fields: [assigned_to], references: [user_id])
+  boss        users     @relation("AssignedBy", fields: [assigned_by], references: [user_id])
+  reports     reports[]
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@index([assigned_to])
+  @@index([assigned_by])
+}
+
+model reports {
+  id          Int      @id @default(autoincrement())
+  task_id     Int
+  reported_by Int
+  report_text String   @db.Text
+  status      Int?
+  users       users    @relation(fields: [reported_by], references: [user_id])
+  tasks       tasks    @relation(fields: [task_id], references: [id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@index([task_id])
+  @@index([reported_by])
+}
+
+model notifications {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  message     String   @db.Text
+  read_status Boolean  @default(false)
+  users       users    @relation(fields: [user_id], references: [user_id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@index([user_id])
+}
+
+model companies {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(100)
+  address     String?       @db.VarChar(255)
+  email       String?       @unique
+  phone       String?       @db.VarChar(20)
+  status      Int?
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  departments departments[]
+  users       users[]
+}
+
+model departments {
+  id         Int         @id @default(autoincrement())
+  name       String      @db.VarChar(100)
+  company_id Int
+  status     Int?
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  companies  companies   @relation(fields: [company_id], references: [id])
+  positions  positions[]
+  users      users[]
+}
+
+model positions {
+  id                Int             @id @default(autoincrement())
+  name              String          @db.VarChar(100)
+  position_level_id Int
+  dept_id           Int
+  status            Int?
+  created_at        DateTime        @default(now())
+  updated_at        DateTime        @updatedAt
+  departments       departments     @relation(fields: [dept_id], references: [id])
+  position_levels   position_levels @relation(fields: [position_level_id], references: [id])
+  users             users[]
+
+  @@index([position_level_id])
+}
+
+model position_levels {
+  id          Int         @id @default(autoincrement())
+  name        String      @db.VarChar(100) // e.g., 'Entry Level', 'Mid Level', 'Senior Level', 'Director Level'
+  description String?     @db.Text // Optional description of the level
+  level_order Int // Numeric order to define hierarchy (e.g., 1 for Entry, 2 for Mid, 3 for Senior, 4 for Director)
+  status      Int?
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  positions   positions[]
+
+  @@index([level_order])
 }

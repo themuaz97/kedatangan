@@ -16,7 +16,6 @@ export const register = async (req: Request, res: Response) => {
       email,
       password,
       confirmPassword,
-      profileImg
     } = req.body;
 
     if (
@@ -104,10 +103,10 @@ export const login = async (req: Request, res: Response) => {
         token: token,
       });
     } else {
-      res.status(500).send("Failed to generate token");
+      res.status(500).json({ error: "Failed to generate token" });
     }
   } catch (error: any) {
-    res.status(500).send(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
