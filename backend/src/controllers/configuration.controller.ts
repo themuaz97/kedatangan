@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../db/prisma.js";
+import bcrypt from "bcrypt";
 
 // roles
 export const getRoles = async (req: Request, res: Response) => {
@@ -35,9 +36,7 @@ export const addRole = async (req: Request, res: Response) => {
 
     if (role) {
       res.status(200).json(role);
-    } else {
-      return res.status(404).json({ error: "Role not found" });
-    }
+    } 
   } catch (error: any) {
     res.status(500).json({ error: "Failed to add role" });
   }
@@ -45,34 +44,40 @@ export const addRole = async (req: Request, res: Response) => {
 
 export const updateRole = async (req: Request, res: Response) => {
   try {
-    const { id, name } = req.body;
+    const { id } = req.params;
+    const { roleName } = req.body;
+
+    if (!roleName) {
+      return res.status(400).json({ error: "Role name is required" });
+    }
 
     const role = await prisma.roles.update({
       where: {
-        id
+        id: Number(id),
       },
       data: {
-        role_name: name
-      }
+        role_name: roleName,
+      },
     });
 
     if (role) {
-      res.status(200).json(role);
+      return res.status(200).json(role);
     } else {
       return res.status(404).json({ error: "Role not found" });
     }
   } catch (error: any) {
-    res.status(500).json({ error: "Failed to update role" });
+    console.error('Failed to update role:', error);
+    return res.status(500).json({ error: "Failed to update role" });
   }
 }
 
 export const deleteRole = async (req: Request, res: Response) => {
   try {
-    const { id } = req.body;
+    const { id } = req.params;
 
     const role = await prisma.roles.update({
       where: {
-        id
+        id: Number(id),
       },
       data: {
         status: 0
@@ -588,5 +593,184 @@ export const getPositionLevelById = async (req: Request, res: Response) => {
     }
   } catch (error: any) {
     res.status(500).json({ error: "Failed to get position level" });
+  }
+}
+
+// users
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await prisma.users.findMany(
+      {
+        where: {
+          status: 1
+        },
+        select: {
+          user_id: true,
+          first_name: true,
+          last_name: true,
+          username: true,
+          email: true,
+          phone_no: true,
+          role_id: true,
+          roles: {
+            select: {
+              role_name: true
+            }
+          },
+          companies: {
+            select: {
+              name: true
+            }
+          },
+          departments: {
+            select: {
+              name: true
+            }
+          },
+          positions: {
+            select: {
+              name: true
+            }
+          },
+        },
+      }
+    )
+
+    if (users) {
+      res.status(200).json(users);
+    } else {
+      return res.status(404).json({ error: "users not found" });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: "Failed to get users" });
+  }
+}
+
+export const addUser = async (req: Request, res: Response) => {
+  try {
+    const { firstName, middleName, lastName, username, password, confirmPassword, email, phoneNo, roleId, companyId, departmentId, positionId } = req.body;
+
+    if (!firstName || !lastName || !username || !password || !confirmPassword || !email || !phoneNo || !roleId || !companyId || !departmentId || !positionId) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).send("Passwords do not match");
+    }
+
+    const existingEmail = await prisma.users.findUnique({ where: { email: email } });
+
+    if (existingEmail) {
+      return res.status(400).send("Email already exists");
+    }
+
+    const existingUsername = await prisma.users.findUnique({ where: { username: username } });
+
+    if (existingUsername) {
+      return res.status(400).send("Username already exists");
+    }
+
+    const salt = bcrypt.genSaltSync();
+    const hashedPassword = bcrypt.hashSync(password, salt);
+
+    const profileImgUrl = `https://avatar.iran.liara.run/username?username=${firstName}+${lastName}`
+
+    const user = await prisma.users.create({
+      data: {
+        first_name: firstName,
+        middle_name: middleName,
+        last_name: lastName,
+        username,
+        email,
+        phone_no: phoneNo,
+        password: hashedPassword,
+        profile_img: profileImgUrl,
+        role_id: roleId,
+        company_id: companyId,
+        dept_id: departmentId,
+        position_id: positionId,
+        status: 1
+      }
+    });
+
+    if (user) {
+      res.status(200).json(user);
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: "Failed to add user" });
+  }
+}
+
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { firstName, middleName, lastName, username, email, phoneNo, address, gender, roleId, companyId, departmentId, positionId } = req.body;
+
+    if (!firstName || !lastName || !username || !email || !phoneNo || !roleId) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const existingEmail = await prisma.users.findUnique({ where: { email: email } });
+
+    if (existingEmail) {
+      return res.status(400).send("Email already exists");
+    }
+
+    const existingUsername = await prisma.users.findUnique({ where: { username: username } });
+
+    if (existingUsername) {
+      return res.status(400).send("Username already exists");
+    }
+
+    const user = await prisma.users.update({
+      where: {
+        user_id: id
+      },
+      data: {
+        first_name: firstName,
+        middle_name: middleName,
+        last_name: lastName,
+        username,
+        email,
+        phone_no: phoneNo,
+        address,
+        gender,
+        role_id: roleId,
+        company_id: companyId,
+        dept_id: departmentId,
+        position_id: positionId
+      }
+    });
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      return res.status(404).json({ error: "User not found" });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: "Failed to update user" });
+  }
+}
+
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const user = await prisma.users.update({
+      where: {
+        user_id: id
+      },
+      data: {
+        status: 0
+      }
+    });
+
+    res.status(200).json(user);
+  } catch (error: any) {
+    res.status(500).json({ error: "Failed to delete user" });
   }
 }

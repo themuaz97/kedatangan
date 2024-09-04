@@ -16,6 +16,7 @@ export const register = async (req: Request, res: Response) => {
       email,
       password,
       confirmPassword,
+      roleId
     } = req.body;
 
     if (
@@ -24,7 +25,8 @@ export const register = async (req: Request, res: Response) => {
       !lastName ||
       !username ||
       !email ||
-      !password
+      !password ||
+      !roleId
     ) {
       return res.status(400).send("All fields are required");
     }
@@ -53,6 +55,7 @@ export const register = async (req: Request, res: Response) => {
         email: email,
         password: hashedPassword,
         profile_img: profileImgUrl,
+        role_id: roleId,
         status: 1,
       },
     });
@@ -118,7 +121,7 @@ export const logout = async (req: Request, res: Response) => {
 
     if (token) {
       const decodedToken = jwt.verify(token, process.env.SECRET_KEY!) as {
-        userId: number;
+        userId: string;
       };
 
       await prisma.tokens.deleteMany({
@@ -140,20 +143,44 @@ export const getLoggedUser = async (req: Request, res: Response) => {
   try {
     const user = await prisma.users.findFirst({
       where: { user_id: req.users?.user_id },
+      include: {
+        roles: {
+          select: { role_name: true },
+        },
+        companies: {
+          select: { name: true },
+        },
+        departments: {
+          select: { name: true },
+        },
+        positions: {
+          select: { name: true },
+        },
+      },
     });
 
     if (!user) {
-      res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json({
-      user_id: user?.user_id,
-      username: user?.username,
-      email: user?.email,
-      profile_img: user?.profile_img,
+    return res.status(200).json({
+      user_id: user.user_id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      username: user.username,
+      email: user.email,
+      phone_no: user.phone_no,
+      address: user.address,
+      gender: user.gender,
+      profile_img: user.profile_img,
+      role: user.roles?.role_name,           // Get the role name
+      company: user.companies?.name,     // Get the company name
+      department: user.departments?.name, // Get the department name
+      position: user.positions?.name,   // Get the position name
     });
   } catch (error: any) {
-    res.status(500).json({ error: "Failed to get logged user" });
+    console.error("Failed to get logged user:", error);
+    return res.status(500).json({ error: "Failed to get logged user" });
   }
 };
 
@@ -272,7 +299,7 @@ export const resetPassword = async (req: Request, res: Response) => {
   }
 };
 
-export const loginMicrosoft = (req: Request, res: Response) => {
+export const microsoftLogin = (req: Request, res: Response) => {
   const authCodeUrlParameters = {
     scopes: [`api://${process.env.CLIENT_ID}/User.Read`],
     redirectUri: process.env.REDIRECT_URI as string,
@@ -286,64 +313,80 @@ export const loginMicrosoft = (req: Request, res: Response) => {
     .catch((error) => console.log(JSON.stringify(error)));
 };
 
-// export const redirect = (req: Request, res: Response) => {
-//   const tokenRequest = {
-//     code: req.query.code as string,
-//     scopes: [`api://${process.env.CLIENT_ID}/User.Read`],
-//     redirectUri: process.env.REDIRECT_URI as string
-//   };
+export const redirect = (req: Request, res: Response) => {
+  const tokenRequest = {
+    code: req.query.code as string,
+    scopes: [`api://${process.env.CLIENT_ID}/User.Read`],
+    redirectUri: process.env.REDIRECT_URI as string
+  };
 
-//   pca.acquireTokenByCode(tokenRequest).then(async (response) => {
-//     if (response && response.account) {
-//       const user = await prisma.users.upsert({
-//         where: { email: response.account.username },
-//         update: { displayName: response.account.name || undefined },
-//         create: {
-//           email: response.account.username,
-//           displayName: response.account.name || undefined
-//         }
-//       });
+  pca.acquireTokenByCode(tokenRequest).then(async (response) => {
+    if (response && response.account) {
+      const user = await prisma.users.upsert({
+        where: { email: response.account.username },
+        update: { 
+          first_name: response.account.name || undefined,
+        },
+        create: {
+          user_id: crypto.randomUUID(),
+          email: response.account.username,
+          first_name: response.account.name as string,
+          username: response.account.username as string,
+          auth_methods: {
+            create: {
+              provider: 'microsoft_sso',
+              provider_id: response.account.localAccountId
+            }
+          }
+        }
+      });
 
-//       const token = response.accessToken
+      const token = response.accessToken;
 
-//       res.cookie('auth_token', token, {
-//         httpOnly: true,
-//         secure: process.env.NODE_ENV === 'development',
-//         sameSite: 'strict',
-//         maxAge: 30 * 24 * 60 * 60 * 1000
-//       });
+      res.cookie('ms_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'development',
+        sameSite: 'strict',
+        maxAge: 3600000
+      });
 
-//       res.redirect(`${process.env.FRONTEND_URL}/profile`);
-//     } else {
-//       res.status(400).send('Invalid response from token acquisition');
-//     }
-//   }).catch((error) => {
-//     console.log(error);
-//     res.status(500).send(error);
-//   });
-// };
+      // Include the user's email in the redirect URL
+      res.redirect(`${process.env.FRONTEND_URL}/profile`);
+    } else {
+      res.status(400).send('Invalid response from token acquisition');
+    }
+  }).catch((error) => {
+    console.log(error);
+    res.status(500).send(error);
+  });
+};
 
-// export const getLoggedUser = async (req: Request, res: Response) => {
-//   try {
-//     const user = await prisma.users.findUnique({
-//       where: {
-//         email: req.user?.username
-//       }
-//     })
+export const getMicrosoftUser = async (req: Request, res: Response) => {
+  try {
+    if (!req.user || !req.user.username) {
+      return res.status(400).send('User information not available');
+    }
 
-//     if (user) {
-//       res.status(200).json(user);
-//     } else {
-//       res.status(404).send('User not found');
-//     }
-//   } catch (error: any) {
-//     res.status(500).send(error);
-//   }
-// };
+    const user = await prisma.users.findUnique({
+      where: {
+        email: req.user.username
+      }
+    });
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).send('User not found in database');
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).send('Internal server error');
+  }
+};
 
 export const logoutMicrosoft = (req: Request, res: Response) => {
   // Clear the auth token cookie
-  res.clearCookie("auth_token");
+  res.clearCookie("ms_token");
 
   // Construct the Microsoft logout URL
   const logoutUri = `https://login.microsoftonline.com/${

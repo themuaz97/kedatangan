@@ -34,6 +34,7 @@ import TabPanels from 'primevue/tabpanels'
 import Tab from 'primevue/tab'
 import Column from 'primevue/column'
 import ColumnGroup from 'primevue/columngroup'
+import ConfirmationService from 'primevue/confirmationservice';
 import Row from 'primevue/row'
 
 const app = createApp(App);
@@ -45,6 +46,7 @@ app.use(PrimeVue, {
   }
 });
 app.use(ToastService)
+app.use(ConfirmationService)
 app.use(createPinia());
 
 app.component('Button', Button)

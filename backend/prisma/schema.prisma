@@ -18,15 +18,16 @@ model roles {
 
 model users {
   id             Int             @default(autoincrement())
-  user_id        Int             @id
+  user_id        String          @id @default(uuid()) @db.Uuid
   first_name     String
   middle_name    String?
-  last_name      String
+  last_name      String? // Nullable, as it may not be used for SSO users
   username       String          @unique
   password       String? // Nullable, as it may not be used for SSO users
   address        String?
   gender         String?         @db.VarChar(10)
   email          String          @unique
+  phone_no       String?         @unique @db.VarChar(15)
   profile_img    String?         @db.Text
   role_id        Int?
   status         Int?
@@ -52,7 +53,7 @@ model auth_methods {
   id          Int      @id @default(autoincrement())
   provider    String   @db.VarChar(50) // 'internal', 'microsoft_sso', etc.
   provider_id String?  @unique // Nullable, used for SSO (e.g., Microsoft's user ID)
-  user_id     Int
+  user_id     String
   users       users    @relation(fields: [user_id], references: [user_id])
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
@@ -65,7 +66,7 @@ model tokens {
   token         String   @db.Text
   refresh_token String?  @db.Text
   expires_at    DateTime
-  user_id       Int
+  user_id       String
   token_type    String // 'auth' for authentication, 'reset' for password reset
   users         users    @relation(fields: [user_id], references: [user_id])
   created_at    DateTime @default(now())
@@ -76,7 +77,7 @@ model tokens {
 
 model attendance {
   id         Int       @id @default(autoincrement())
-  user_id    Int
+  user_id    String
   date       DateTime
   clock_in   DateTime
   clock_out  DateTime?
@@ -93,8 +94,8 @@ model tasks {
   description String    @db.Text
   task_status String    @db.VarChar(50) // e.g., 'pending', 'in-progress', 'completed'
   due_date    DateTime?
-  assigned_to Int // The employee assigned to the task
-  assigned_by Int // The boss who assigned the task
+  assigned_to String // The employee assigned to the task
+  assigned_by String // The boss who assigned the task
   status      Int?
   users       users     @relation("AssignedTasks", fields: [assigned_to], references: [user_id])
   boss        users     @relation("AssignedBy", fields: [assigned_by], references: [user_id])
@@ -109,7 +110,7 @@ model tasks {
 model reports {
   id          Int      @id @default(autoincrement())
   task_id     Int
-  reported_by Int
+  reported_by String
   report_text String   @db.Text
   status      Int?
   users       users    @relation(fields: [reported_by], references: [user_id])
@@ -123,7 +124,7 @@ model reports {
 
 model notifications {
   id          Int      @id @default(autoincrement())
-  user_id     Int
+  user_id     String
   message     String   @db.Text
   read_status Boolean  @default(false)
   users       users    @relation(fields: [user_id], references: [user_id])

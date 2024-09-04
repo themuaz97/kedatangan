@@ -3,13 +3,6 @@ import { useToast } from "primevue/usetoast";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
-export type User = {
-  id: string;
-  username: string;
-  email: string;
-  profile_img?: string;
-};
-
 const router = useRouter();
 const menu = ref();
 const emit = defineEmits(["toggle-sidebar"]);

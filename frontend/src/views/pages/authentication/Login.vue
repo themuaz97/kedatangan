@@ -13,7 +13,7 @@ const toast = useToast();
 const submitted = ref(false); // Track if form has been submitted
 
 const loginMicrosoft = () => {
-  window.location.href = "http://localhost:3005/api/auth/login";
+  window.location.href = "http://localhost:3005/api/auth/microsoft-login";
 };
 
 const handleSubmit = async () => {
@@ -55,7 +55,10 @@ onMounted(() => {
         </label>
         <input
           v-model="email"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          :class="[
+            'bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+            {'border-red-500': submitted && !email, 'border-gray-300 dark:border-gray-600': !(submitted && !email)}
+          ]"
           id="email"
           type="text"
           placeholder="Email"
@@ -71,7 +74,10 @@ onMounted(() => {
         </label>
         <input
           v-model="password"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          :class="[
+            'bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+            {'border-red-500': submitted && !password, 'border-gray-300 dark:border-gray-600': !(submitted && !password)}
+          ]"
           id="password"
           type="password"
           placeholder="Password"
@@ -101,3 +107,4 @@ onMounted(() => {
     </form>
   </div>
 </template>
+

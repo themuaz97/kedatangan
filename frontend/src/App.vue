@@ -5,6 +5,7 @@ import Toast from 'primevue/toast';
 <template>
   <router-view />
   <Toast />
+  <ConfirmPopup />
 </template>
 
 <style scoped>
