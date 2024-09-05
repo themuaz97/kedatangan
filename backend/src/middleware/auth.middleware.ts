@@ -26,38 +26,62 @@ export const protectRouteMicrosoft = async (
   const token = req.cookies.ms_token;
 
   if (!token) {
-    return res
-      .status(401)
-      .json({ error: "No token found, authorization denied" });
+    return res.status(401).json({ error: "No token found, authorization denied" });
   }
 
   try {
-    const decodedToken = jwt.decode(token);
-    console.log("Token (first 20 chars):", token.substring(0, 20));
-    if (decodedToken && typeof decodedToken !== 'string') {
-      const expirationTime = decodedToken.exp ? new Date(decodedToken.exp * 1000).toISOString() : null;
-      console.log('Token expiration:', expirationTime);
-      console.log('Current time:', new Date().toISOString());
-    }
-
     const oboRequest = {
       oboAssertion: token,
       scopes: [`api://${process.env.CLIENT_ID}/User.Read`],
     };
 
     const result = await pca.acquireTokenOnBehalfOf(oboRequest);
-    // console.log('OBO Result:', result);
 
-    if (result && result.account) {
-      console.log("Token acquired successfully");
-      req.user = result.account;
-      next();
+    if (result && result.accessToken) {
+      console.log("Access token acquired successfully");
+      
+      const decodedToken = jwt.decode(result.accessToken) as jwt.JwtPayload;
+      // console.log("Decoded Access Token:", JSON.stringify(decodedToken, null, 2));
+
+      if (decodedToken) {
+        // Extract user information from the decoded token
+        const partialAccountInfo: Partial<AccountInfo> = {
+          username: decodedToken.unique_name || decodedToken.username,
+          name: decodedToken.name,
+          localAccountId: decodedToken.oid,
+          tenantId: decodedToken.tid,
+          environment: "login.windows.net", // This is typically constant for Azure AD
+        };
+
+        // Use type assertion to assign the partial object to req.user
+        req.user = partialAccountInfo as AccountInfo;
+        
+        // Fetch user from database
+        const user = await prisma.auth_methods.findUnique({
+          where: { provider_id: req.user.localAccountId },
+        });
+
+        if (user) {
+          req.users = { user_id: user.user_id };
+        } else {
+          console.log("User not found in database");
+        }
+
+        next();
+      } else {
+        console.log("Unable to decode access token");
+        res.status(401).send("Invalid token: Unable to decode");
+      }
     } else {
-      console.log("No account information in the result");
-      res.status(401).send("Invalid token: No account information");
+      console.log("No access token in the result");
+      res.status(401).send("Invalid token: No access token");
     }
   } catch (error: any) {
     console.error("Error acquiring token:", error);
+    if (error.errorCode) {
+      console.error("Error Code:", error.errorCode);
+      console.error("Error Message:", error.errorMessage);
+    }
     if (error.name === "InteractionRequiredAuthError") {
       res.status(401).send("Token expired. Please log in again.");
     } else if (error.name === "ClientAuthError") {

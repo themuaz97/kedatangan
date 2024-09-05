@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -10,6 +10,18 @@ const toast = useToast();
 
 const user = ref<User | null>(null);
 const isLoading = ref(false);
+
+// Function to generate a random hex color
+const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
+// Topbar items
 const topbarItems = ref([
   {
     label: "Profile",
@@ -24,14 +36,24 @@ const topbarItems = ref([
     command: () => {
       try {
         fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      }).then(() => {
-        toast.add({ severity: "secondary", summary: "logged out successfully", detail: "", life: 3000 });
-        router.push({ name: "login" });
-      });
+          method: "POST",
+          credentials: "include",
+        }).then(() => {
+          toast.add({
+            severity: "secondary",
+            summary: "logged out successfully",
+            detail: "",
+            life: 3000,
+          });
+          router.push({ name: "login" });
+        });
       } catch (error: any) {
-        toast.add({ severity: "error", summary: "error while logging out", detail: error, life: 3000 });
+        toast.add({
+          severity: "error",
+          summary: "error while logging out",
+          detail: error,
+          life: 3000,
+        });
       }
     },
   },
@@ -40,6 +62,23 @@ const topbarItems = ref([
 const toggle = (event: Event) => {
   menu.value.toggle(event);
 };
+
+// Compute initials from first_name and last_name
+const initials = computed(() => {
+  if (user.value) {
+    const firstInitial = user.value.first_name
+      ? user.value.first_name.charAt(0).toUpperCase()
+      : "";
+    const lastInitial = user.value.last_name
+      ? user.value.last_name.charAt(0).toUpperCase()
+      : "";
+    return `${firstInitial}${lastInitial}`;
+  }
+  return "";
+});
+
+// Compute random background color for initials
+const randomBgColor = ref(getRandomColor());
 
 const fetchUser = async () => {
   isLoading.value = true;
@@ -65,8 +104,11 @@ const fetchUser = async () => {
   }
 };
 
-onMounted(fetchUser);
+onMounted(() => {
+  fetchUser();
+});
 </script>
+
 <template>
   <div class="topbar">
     <div>
@@ -95,16 +137,21 @@ onMounted(fetchUser);
           >
             <i class="pi pi-spin pi-spinner text-2xl"></i>
           </div>
+          <!-- Display the profile image if available -->
           <img
             v-else-if="user?.profile_img"
             :src="user.profile_img"
             alt="profile"
             class="w-8 h-8 rounded-full"
           />
-          <i
+          <!-- Display initials with random background color if profile image is not available -->
+          <div
             v-else
-            class="pi pi-user w-8 h-8 flex items-center justify-center bg-gray-300 rounded-full"
-          ></i>
+            class="w-8 h-8 flex items-center justify-center text-white rounded-full text-lg"
+            :style="{ backgroundColor: randomBgColor }"
+          >
+            {{ initials }}
+          </div>
           <Menu
             ref="menu"
             id="overlay_menu"
@@ -116,4 +163,5 @@ onMounted(fetchUser);
     </div>
   </div>
 </template>
+
 <style scoped></style>

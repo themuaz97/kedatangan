@@ -45,7 +45,7 @@ onMounted(() => {
 
 <template>
   <div class="w-full max-w-xs">
-    <form class="w-full p-6 rounded-lg shadow dark:border md:mt-0 sm:max-w-md bg-gray-800 dark:border-gray-700 sm:p-8" @submit.prevent="handleSubmit">
+    <form class="w-full p-6 mb-4 rounded-lg shadow dark:border md:mt-0 sm:max-w-md bg-gray-800 dark:border-gray-700 sm:p-8" @submit.prevent="handleSubmit">
       <div class="mb-4">
         <label
           class="block text-white text-sm font-bold mb-2"
@@ -91,20 +91,39 @@ onMounted(() => {
         >
           Sign In
         </button>
-        <button
-          class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
-          @click="loginMicrosoft"
-        >
-          Login with Microsoft
-        </button>
         <a
-          class="inline-block text-center text-white font-bold mt-2 text-sm hover:text-purple-800"
+          class="inline-block text-center text-white mt-2 text-sm hover:text-purple-400"
           href="/forgot-password"
         >
           Forgot Password?
         </a>
       </div>
     </form>
+
+    <!-- Divider with 'or' in between -->
+    <div class="flex items-center justify-center my-4">
+      <hr class="flex-grow border-t border-gray-400" />
+      <span class="mx-4 text-white text-lg">or login with</span>
+      <hr class="flex-grow border-t border-gray-400" />
+    </div>
+
+    <div class="flex justify-center">
+      <button
+          class="bg-gray-800 hover:bg-purple-500 focus:ring-purple-500 text-white font-bold py-2 px-4 rounded"
+          @click="loginMicrosoft"
+          v-tooltip.bottom="'Microsoft'"
+        >
+        <i class="pi pi-microsoft" style="font-size: 2rem"></i>
+      </button>
+      <button
+          class="bg-gray-800 hover:bg-purple-500 focus:ring-purple-500 text-white font-bold py-2 px-4 rounded"
+          @click="loginGoogle"
+          v-tooltip.bottom="'Google'"
+        >
+        <i class="pi pi-google" style="font-size: 2rem"></i>
+      </button>
+    </div>
   </div>
 </template>
+
 

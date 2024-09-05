@@ -6,7 +6,7 @@ import { deleteExpiredTokens } from "./expiredToken.js";
 export const generateToken = async (
   userId: string,
   res: Response,
-  provider: "internal" | "microsoft_sso",
+  provider: "internal" | "microsoft",
   token_type: 'auth' | 'reset'
 ) => {
   // Delete expired tokens
@@ -19,13 +19,13 @@ export const generateToken = async (
 
   // 2. Calculate the expiration time
   const expiresAt = new Date();
-  expiresAt.setMinutes(expiresAt.getHours() + 1); // Token expires in 20 minutes
+  expiresAt.setMinutes(expiresAt.getHours() + 1); // Token expires in x minutes
 
   res.cookie("jwt", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "development", // Use secure cookies in development
     sameSite: "strict",
-    maxAge: 60 * 60 * 1000, // 20 minutes in milliseconds
+    maxAge: 60 * 60 * 1000, // x minutes in milliseconds
   });
 
   // 3. Store the authentication method if not already existing

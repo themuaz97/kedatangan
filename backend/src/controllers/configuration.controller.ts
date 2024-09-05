@@ -140,8 +140,8 @@ export const addCompany = async (req: Request, res: Response) => {
   try {
     const { name, address, email, phone } = req.body;
 
-    if (!name || !address || !email || !phone) {
-      return res.status(400).json({ error: "All fields are required" });
+    if (!name || !email || !phone) {
+      return res.status(400).json({ error: "there are missing fields that are required" });
     }
 
     const company = await prisma.companies.create({
@@ -166,7 +166,8 @@ export const addCompany = async (req: Request, res: Response) => {
 
 export const updateCompany = async (req: Request, res: Response) => {
   try {
-    const { id, name, address, email, phone } = req.body;
+    const { id } = req.params;
+    const { name, address, email, phone } = req.body;
 
     if (!name || !address || !email || !phone) {
       return res.status(400).json({ error: "All fields are required" });
@@ -174,7 +175,7 @@ export const updateCompany = async (req: Request, res: Response) => {
 
     const company = await prisma.companies.update({
       where: {
-        id
+        id: Number(id),
       },
       data: {
         name,
@@ -196,11 +197,11 @@ export const updateCompany = async (req: Request, res: Response) => {
 
 export const deleteCompany = async (req: Request, res: Response) => {
   try {
-    const { id } = req.body;
+    const { id } = req.params;
 
     const company = await prisma.companies.update({
       where: {
-        id
+        id: Number(id),
       },
       data: {
         status: 0

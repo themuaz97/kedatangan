@@ -334,7 +334,7 @@ export const redirect = (req: Request, res: Response) => {
           username: response.account.username as string,
           auth_methods: {
             create: {
-              provider: 'microsoft_sso',
+              provider: 'microsoft',
               provider_id: response.account.localAccountId
             }
           }
@@ -363,18 +363,34 @@ export const redirect = (req: Request, res: Response) => {
 
 export const getMicrosoftUser = async (req: Request, res: Response) => {
   try {
-    if (!req.user || !req.user.username) {
+    if (!req.user || !req.user.localAccountId) {
       return res.status(400).send('User information not available');
     }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.auth_methods.findUnique({
       where: {
-        email: req.user.username
+        provider_id: req.user.localAccountId
+      },
+      include: {
+        users: {
+          select: {
+            user_id: true,
+            email: true,
+            first_name: true,
+            last_name: true,
+            username: true,
+            address: true,
+            phone_no: true,
+            gender: true,
+            profile_img: true,
+            role_id: true
+          }
+        }
       }
     });
 
     if (user) {
-      res.status(200).json(user);
+      res.status(200).json(user.users);
     } else {
       res.status(404).send('User not found in database');
     }

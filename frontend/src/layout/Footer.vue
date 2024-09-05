@@ -2,7 +2,7 @@
   
   <footer class="footer">
     <Divider />
-    <p>© 2024 Attendance System. All rights reserved.</p>
+    <p>© 2024 Kedatangan. All rights reserved.</p>
   </footer>
 </template>
 
