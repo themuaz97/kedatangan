@@ -92,7 +92,7 @@ const isFormChanged = computed(() => {
   );
 });
 
-const previewImage = (event: Event) => {}
+const previewImage = (event: Event) => {};
 
 const handleSubmit = async () => {
   submitted.value = true;
@@ -282,7 +282,7 @@ onMounted(() => {
             <input
               v-model="email"
               :class="[
-                'bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                'bg-gray-50 border disabled:opacity-75 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
                 {
                   'border-red-500': submitted && !email,
                   'border-gray-300 dark:border-gray-600': !(
@@ -311,23 +311,12 @@ onMounted(() => {
             <input
               v-model="phoneNo"
               :class="[
-                'bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                {
-                  'border-red-500': submitted && !phoneNo,
-                  'border-gray-300 dark:border-gray-600': !(
-                    submitted && !phoneNo
-                  ),
-                },
+                'bg-gray-50 border border-gray-300 dark:border-gray-600 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
               ]"
               id="phoneNo"
               type="text"
               placeholder="Phone No."
             />
-            <small
-              v-if="submitted && !phoneNo"
-              class="text-red-500 text-xs italic"
-              >Phone No. is required.</small
-            >
           </div>
           <div class="mb-6">
             <label
@@ -339,23 +328,12 @@ onMounted(() => {
             <textarea
               v-model="address"
               :class="[
-                'bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                {
-                  'border-red-500': submitted && !address,
-                  'border-gray-300 dark:border-gray-600': !(
-                    submitted && !address
-                  ),
-                },
+                'bg-gray-50 border border-gray-300 dark:border-gray-600 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
               ]"
               type="text"
               placeholder="Address"
               style="resize: none; height: 80px"
             />
-            <small
-              v-if="submitted && !address"
-              class="text-red-500 text-xs italic"
-              >Address is required.</small
-            >
           </div>
           <div class="mb-6">
             <label
@@ -364,25 +342,36 @@ onMounted(() => {
             >
               Gender
             </label>
-            <div class="flex flex-wrap gap-4">
-              <div class="flex items-center">
-                <RadioButton
+            <div class="flex items-center space-x-4">
+              <!-- Male option -->
+              <label class="flex items-center cursor-pointer">
+                <input
+                  type="radio"
                   v-model="gender"
-                  inputId="ingredient3"
-                  name="male"
                   value="male"
+                  class="appearance-none w-5 h-5 rounded-full border-2 border-gray-300 checked:border-purple-500 checked:bg-purple-500 focus:outline-none"
                 />
-                <label for="male" class="ml-2">Male</label>
-              </div>
-              <div class="flex items-center">
-                <RadioButton
+                <span
+                  class="ml-2 text-white"
+                  :class="{ 'text-purple-500': gender === 'male' }"
+                  >Male</span
+                >
+              </label>
+
+              <!-- Female option -->
+              <label class="flex items-center cursor-pointer">
+                <input
+                  type="radio"
                   v-model="gender"
-                  inputId="ingredient4"
-                  name="female"
                   value="female"
+                  class="appearance-none w-5 h-5 rounded-full border-2 border-gray-300 checked:border-purple-500 checked:bg-purple-500 focus:outline-none"
                 />
-                <label for="female" class="ml-2">Female</label>
-              </div>
+                <span
+                  class="ml-2 text-white"
+                  :class="{ 'text-purple-500': gender === 'female' }"
+                  >Female</span
+                >
+              </label>
             </div>
           </div>
           <div class="flex justify-center">

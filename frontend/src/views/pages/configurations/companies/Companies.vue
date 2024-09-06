@@ -92,7 +92,7 @@
                   class="flex-auto"
                   autocomplete="off"
                 />
-                <small v-if="editCompanynameError" class="p-error"
+                <small v-if="editCompanyNameError" class="p-error"
                   >Company Name is required!</small
                 >
                 <label for="CompanyEmail" class="font-semibold w-full">Email</label>
@@ -172,14 +172,16 @@ const companyAddress = ref("");
 const companyNameError = ref(false);
 const companyEmailError = ref(false);
 const companyPhoneError = ref(false);
-const companyAddressError = ref(false);
 
+const BtnCompanyEdit = ref(false);
 const editCompanyName = ref("");
 const editCompanyEmail = ref("");
 const editCompanyPhone = ref("");
 const editCompanyAddress = ref("");
-const editCompanyError = ref(false);
-const BtnCompanyEdit = ref(false);
+const editCompanyNameError = ref(false);
+const editCompanyEmailError = ref(false);
+const editCompanyPhoneError = ref(false);
+
 
 const BtnCompanyAdd = async () => {
   companyNameError.value = companyName.value.trim() === "";
@@ -203,7 +205,7 @@ const BtnCompanyAdd = async () => {
 
     if (!response.ok) {
       const { error } = await response.json();
-      toast.add({ severity: "error", summary: "Error", detail: error, life: 3000 });
+      toast.add({ severity: "warn", summary: "Warning!", detail: error, life: 3000 });
     } else {
       toast.add({ severity: "success", summary: "Success", detail: "Company added", life: 3000 });
       companyName.value = "";
@@ -218,7 +220,11 @@ const BtnCompanyAdd = async () => {
   }
 }
 
-const openEditDialog = async (company: { id: number; role_name: string }) => {
+const openEditDialog = async (company: {
+  email: string;
+  phone: string;
+  address: string; id: number; name: string 
+}) => {
   // console.log("company", company.id);
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}/api/company/${company.id}/view`,

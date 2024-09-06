@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import Roles from './roles/Roles.vue';
-import User from './users/User.vue';
-import Company from './companies/Company.vue';
+import Users from './users/Users.vue';
+import Companies from './companies/Companies.vue';
+import Departments from './departments/Departments.vue';
+import PositionLevels from './positionLevel/PositionLevels.vue';
 </script>
 
 <template>
@@ -20,19 +22,13 @@ import Company from './companies/Company.vue';
                     <Roles />
                 </TabPanel>
                 <TabPanel value="1">
-                    <Company />
+                    <Companies />
                 </TabPanel>
                 <TabPanel value="2">
-                    <p class="m-0">
-                        At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa
-                        qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
-                    </p>
+                    <Departments />
                 </TabPanel>
                 <TabPanel value="3">
-                    <p class="m-0">
-                        At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa
-                        qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
-                    </p>
+                    <PositionLevels />
                 </TabPanel>
                 <TabPanel value="4">
                     <p class="m-0">
@@ -42,7 +38,7 @@ import Company from './companies/Company.vue';
                 </TabPanel>
                 <TabPanel value="5">
                     <p class="m-0">
-                        <User />
+                        <Users />
                     </p>
                 </TabPanel>
             </TabPanels>
