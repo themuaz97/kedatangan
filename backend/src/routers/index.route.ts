@@ -5,6 +5,7 @@ import { protectRoute } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
+router.post('/roles/add', addRole)
 router.use(protectRoute);
 
 // account routes
@@ -13,7 +14,6 @@ router.put('/account/update', updateMe);
 // configurations routes
 router.get('/roles', getRoles)
 router.get('/roles/:id/view', getRolesById)
-router.post('/roles/add', addRole)
 router.put('/roles/:id/update', updateRole)
 router.put('/roles/:id/delete', deleteRole)
 

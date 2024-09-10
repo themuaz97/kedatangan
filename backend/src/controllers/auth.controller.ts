@@ -341,23 +341,15 @@ export const redirect = (req: Request, res: Response) => {
         }
       });
 
-      const token = response.accessToken;
+      await generateToken(user.user_id, res, 'microsoft', 'auth');
 
-      res.cookie('ms_token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'development',
-        sameSite: 'strict',
-        maxAge: 3600000
-      });
-
-      // Include the user's email in the redirect URL
       res.redirect(`${process.env.FRONTEND_URL}/profile`);
     } else {
-      res.status(400).send('Invalid response from token acquisition');
+      res.status(400).json({ message: 'Invalid response from token acquisition'});
     }
   }).catch((error) => {
     console.log(error);
-    res.status(500).send(error);
+    res.status(500).json(error);
   });
 };
 

@@ -2,6 +2,7 @@
 import { useToast } from "primevue/usetoast";
 import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { getRandomColor } from "../utils/profileImg";
 
 const router = useRouter();
 const menu = ref();
@@ -11,15 +12,6 @@ const toast = useToast();
 const user = ref<User | null>(null);
 const isLoading = ref(false);
 
-// Function to generate a random hex color
-const getRandomColor = () => {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
 
 // Topbar items
 const topbarItems = ref([
@@ -76,9 +68,6 @@ const initials = computed(() => {
   }
   return "";
 });
-
-// Compute random background color for initials
-const randomBgColor = ref(getRandomColor());
 
 const fetchUser = async () => {
   isLoading.value = true;
@@ -148,7 +137,7 @@ onMounted(() => {
           <div
             v-else
             class="w-8 h-8 flex items-center justify-center text-white rounded-full text-lg"
-            :style="{ backgroundColor: randomBgColor }"
+            :style="{ backgroundColor: getRandomColor() }"
           >
             {{ initials }}
           </div>

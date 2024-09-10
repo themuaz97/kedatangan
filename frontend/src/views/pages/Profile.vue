@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useToast } from "primevue/usetoast";
 import { useRoute } from "vue-router";
+import { getRandomColor } from "../../utils/profileImg";
 
 const toast = useToast();
 const route = useRoute();
@@ -59,25 +60,6 @@ const fetchUser = async () => {
   }
 };
 
-const fetchMicrosoftUser = async () => {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/auth/me-microsoft`,
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
-    const userData = await response.json();
-    user.value = userData;
-  } catch (err) {
-    error.value = "Failed to fetch user data";
-    console.error(err);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
 // Check if any form field is changed
 const isFormChanged = computed(() => {
   return (
@@ -93,6 +75,19 @@ const isFormChanged = computed(() => {
 });
 
 const previewImage = (event: Event) => {};
+
+const initials = computed(() => {
+  if (user.value) {
+    const firstInitial = user.value.first_name
+      ? user.value.first_name.charAt(0).toUpperCase()
+      : "";
+    const lastInitial = user.value.last_name
+      ? user.value.last_name.charAt(0).toUpperCase()
+      : "";
+    return `${firstInitial}${lastInitial}`;
+  }
+  return "";
+});
 
 const handleSubmit = async () => {
   submitted.value = true;
@@ -138,7 +133,6 @@ const handleSubmit = async () => {
 
 onMounted(() => {
   fetchUser();
-  fetchMicrosoftUser();
 });
 </script>
 
@@ -165,11 +159,13 @@ onMounted(() => {
                 class="w-full h-full object-cover rounded-full"
               />
               <!-- Placeholder for upload button if no image is available -->
-              <img
-                v-else
-                :src="user?.profile_img"
-                class="w-full h-full object-cover rounded-full"
-              />
+              <div
+            v-else
+            class="w-32 h-32 flex items-center justify-center text-white rounded-full text-7xl"
+            :style="{ backgroundColor: getRandomColor() }"
+          >
+            {{ initials }}
+          </div>
             </label>
             <span class="font-bold text-xl">{{ user?.username }}</span>
             <span>{{ user?.position }}</span>
