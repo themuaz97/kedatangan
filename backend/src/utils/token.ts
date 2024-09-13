@@ -4,7 +4,7 @@ import prisma from "../db/prisma.js";
 import { deleteExpiredTokens } from "./expiredToken.js";
 
 export const generateToken = async (
-  userId: string,
+  userId: number,
   res: Response,
   provider: "internal" | "microsoft",
   token_type: 'auth' | 'reset'

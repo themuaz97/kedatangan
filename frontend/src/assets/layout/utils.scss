@@ -10,3 +10,22 @@
       margin-bottom: 0;
   }
 }
+
+/* Tailwind's fade-in / fade-out for the modal backdrop */
+.fade-enter-active, .fade-leave-active {
+  @apply transition-opacity duration-300;
+}
+.fade-enter-from, .fade-leave-to {
+  @apply opacity-0;
+}
+
+/* Scale transition for modal itself */
+.modal-enter-active, .modal-leave-active {
+  @apply transition-transform transition-opacity duration-300;
+}
+.modal-enter-from {
+  @apply opacity-0 scale-95;
+}
+.modal-leave-to {
+  @apply opacity-0 scale-95;
+}

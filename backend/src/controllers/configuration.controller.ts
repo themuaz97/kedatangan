@@ -246,6 +246,13 @@ export const getDepartments = async (req: Request, res: Response) => {
       {
         where: {
           status: 1
+        },
+        include: {
+          companies: {
+            select: {
+              name: true
+            }
+          }
         }
       }
     );
@@ -288,7 +295,8 @@ export const addDepartment = async (req: Request, res: Response) => {
 
 export const updateDepartment = async (req: Request, res: Response) => {
   try {
-    const { id, name, companyId } = req.body;
+    const { id } = req.params;
+    const { name, companyId } = req.body;
 
     if (!name || !companyId) {
       return res.status(400).json({ error: "All fields are required" });
@@ -296,11 +304,12 @@ export const updateDepartment = async (req: Request, res: Response) => {
 
     const department = await prisma.departments.update({
       where: {
-        id
+        id: Number(id)
       },
       data: {
         name,
-        company_id: companyId
+        company_id: companyId,
+        updated_at: new Date()
       }
     });
 
@@ -316,11 +325,11 @@ export const updateDepartment = async (req: Request, res: Response) => {
 
 export const deleteDepartment = async (req: Request, res: Response) => {
   try {
-    const { id } = req.body;
+    const { id } = req.params;
 
     const department = await prisma.departments.update({
       where: {
-        id
+        id: Number(id)
       },
       data: {
         status: 0
@@ -649,9 +658,9 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const addUser = async (req: Request, res: Response) => {
   try {
-    const { firstName, middleName, lastName, username, password, confirmPassword, email, phoneNo, roleId, companyId, departmentId, positionId } = req.body;
+    const { userId, firstName, middleName, lastName, username, password, confirmPassword, email, phoneNo, roleId, companyId, departmentId, positionId } = req.body;
 
-    if (!firstName || !lastName || !username || !password || !confirmPassword || !email || !phoneNo || !roleId || !companyId || !departmentId || !positionId) {
+    if (!userId || !firstName || !lastName || !username || !password || !confirmPassword || !email || !phoneNo || !roleId || !companyId || !departmentId || !positionId) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -678,6 +687,7 @@ export const addUser = async (req: Request, res: Response) => {
 
     const user = await prisma.users.create({
       data: {
+        user_id: userId,
         first_name: firstName,
         middle_name: middleName,
         last_name: lastName,
@@ -725,7 +735,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
     const user = await prisma.users.update({
       where: {
-        user_id: id
+        user_id: Number(id)
       },
       data: {
         first_name: firstName,
@@ -763,7 +773,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     const user = await prisma.users.update({
       where: {
-        user_id: id
+        user_id: Number(id)
       },
       data: {
         status: 0

@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { generateToken } from "../utils/token.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import { generateRandomUserId } from "../utils/generateUserId.js";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -127,7 +128,7 @@ export const logout = async (req: Request, res: Response) => {
       await prisma.tokens.deleteMany({
         where: {
           token: token,
-          user_id: decodedToken.userId,
+          user_id: parseInt(decodedToken.userId, 10),
         },
       });
     }
@@ -328,7 +329,7 @@ export const redirect = (req: Request, res: Response) => {
           first_name: response.account.name || undefined,
         },
         create: {
-          user_id: crypto.randomUUID(),
+          user_id: Number(generateRandomUserId()),
           email: response.account.username,
           first_name: response.account.name as string,
           username: response.account.username as string,

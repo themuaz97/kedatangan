@@ -36,6 +36,7 @@ import Column from 'primevue/column'
 import ColumnGroup from 'primevue/columngroup'
 import ConfirmationService from 'primevue/confirmationservice';
 import Row from 'primevue/row'
+import Modal from './components/Modal.vue'
 
 const app = createApp(App);
 
@@ -63,6 +64,7 @@ app.component('Divider', Divider)
 app.component('InputGroup', InputGroup)
 app.component('InputNumber', InputNumber)
 app.component('InputText', InputText)
+app.component('Modal', Modal)
 app.component('Menu', Menu)
 app.component('Password', Password)
 app.component('Popover', Popover)

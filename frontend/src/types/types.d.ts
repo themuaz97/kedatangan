@@ -17,4 +17,22 @@ declare global {
     department?: string;
     position?: string;
   };
+
+  export type Company = {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+  };
+
+  export type Department = {
+    id: number;
+    name: string;
+    company_id: number;
+    companies: { 
+      id: number
+      name: string
+    }
+  }
 }

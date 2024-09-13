@@ -104,6 +104,7 @@ const handleSubmit = async () => {
       body: JSON.stringify({
         first_name: firstName.value,
         middle_name: middleName.value,
+        last_name: lastName.value,
         username: username.value,
         email: email.value,
         phone_no: phoneNo.value,
@@ -161,7 +162,7 @@ onMounted(() => {
               <!-- Placeholder for upload button if no image is available -->
               <div
             v-else
-            class="w-32 h-32 flex items-center justify-center text-white rounded-full text-7xl"
+            class="w-32 h-32 flex items-center justify-center text-white rounded-full text-6xl"
             :style="{ backgroundColor: getRandomColor() }"
           >
             {{ initials }}

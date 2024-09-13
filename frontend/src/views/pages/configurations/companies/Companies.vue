@@ -213,7 +213,7 @@ const BtnCompanyAdd = async () => {
       companyPhone.value = "";
       companyAddress.value = "";
       openAddDialog.value = false;
-      fetchRoles();
+      fetchCompanies();
     }
   } catch (error: any) {
     toast.add({ severity: "error", summary: "Error", detail: error, life: 3000 });
@@ -284,7 +284,7 @@ const BtnRoleEditSave = async () => {
       life: 3000,
     });
     BtnCompanyEdit.value = false;
-    fetchRoles();
+    fetchCompanies();
   }
 };
 
@@ -320,13 +320,13 @@ const BtnRoleDelete = async (event: any, company: { id: number }) => {
           detail: "Company deleted successfully",
           life: 3000,
         });
-        fetchRoles();
+        fetchCompanies();
       }
     },
   });
 };
 
-const fetchRoles = async () => {
+const fetchCompanies = async () => {
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/companies`, {
       method: "GET",
@@ -361,6 +361,6 @@ const fetchRoles = async () => {
 };
 
 onMounted(() => {
-  fetchRoles();
+  fetchCompanies();
 });
 </script>

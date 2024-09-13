@@ -136,7 +136,7 @@ onMounted(() => {
           <!-- Display initials with random background color if profile image is not available -->
           <div
             v-else
-            class="w-8 h-8 flex items-center justify-center text-white rounded-full text-lg"
+            class="w-8 h-8 flex items-center justify-center text-white rounded-full text-sm"
             :style="{ backgroundColor: getRandomColor() }"
           >
             {{ initials }}

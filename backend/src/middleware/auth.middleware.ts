@@ -12,7 +12,7 @@ declare global {
 
     export interface Request {
       users?: {
-        user_id: string;
+        user_id: number;
       };
     }
   }
@@ -113,7 +113,7 @@ export const protectRoute = async (
 
     // 3. Fetch the user from the database
     const user = await prisma.users.findUnique({
-      where: { user_id: userId },
+      where: { user_id: Number(userId) },
       include: { roles: true }, // Include related models if needed
     });
 
