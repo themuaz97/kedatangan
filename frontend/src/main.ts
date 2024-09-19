@@ -7,7 +7,7 @@ import { createPinia } from 'pinia';
 import PrimeVue from "primevue/config";
 import Aura from '@primevue/themes/aura';
 import Select from 'primevue/select';
-import Checkbox from 'primevue/checkbox';
+// import Checkbox from 'primevue/checkbox';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import Menu from 'primevue/menu';
@@ -37,6 +37,8 @@ import ColumnGroup from 'primevue/columngroup'
 import ConfirmationService from 'primevue/confirmationservice';
 import Row from 'primevue/row'
 import Modal from './components/Modal.vue'
+import Checkbox from './components/Checkbox.vue'
+import Radio from './components/Radio.vue'
 
 const app = createApp(App);
 
@@ -69,6 +71,7 @@ app.component('Menu', Menu)
 app.component('Password', Password)
 app.component('Popover', Popover)
 app.component('RadioButton', RadioButton)
+app.component('Radio', Radio)
 app.component('Row', Row)
 app.component('Select', Select)
 app.component('Stepper', Stepper)

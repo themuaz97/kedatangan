@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
+    Checkbox: typeof import('./src/components/Checkbox.vue')['default']
     Column: typeof import('primevue/column')['default']
     ConfirmPopup: typeof import('primevue/confirmpopup')['default']
     DataTable: typeof import('primevue/datatable')['default']
@@ -19,6 +20,8 @@ declare module 'vue' {
     Menu: typeof import('primevue/menu')['default']
     Modal: typeof import('./src/components/Modal.vue')['default']
     Project: typeof import('./src/components/Project.vue')['default']
+    Radio: typeof import('./src/components/Radio.vue')['default']
+    RadioButton: typeof import('primevue/radiobutton')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Tab: typeof import('primevue/tab')['default']
