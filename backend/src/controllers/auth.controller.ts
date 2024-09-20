@@ -98,17 +98,14 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).send("Incorrect password");
     }
 
-    const token = await generateToken(user.user_id, res, "internal", "auth");
-
-    if (token) {
-      res.status(200).json({
-        username: user.username,
-        email: user.email,
-        token: token,
-      });
-    } else {
-      res.status(500).json({ error: "Failed to generate token" });
-    }
+    const { accessToken, refreshToken } = await generateToken(user.user_id, res, "internal", "auth");
+    
+    res.status(200).json({
+      username: user.username,
+      email: user.email,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -182,6 +179,40 @@ export const getLoggedUser = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error("Failed to get logged user:", error);
     return res.status(500).json({ error: "Failed to get logged user" });
+  }
+};
+
+export const refreshToken = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshJwt;
+
+  if (!refreshToken) {
+    return res.status(401).send("Refresh token not found");
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET_KEY!) as { userId: number };
+    const storedToken = await prisma.tokens.findFirst({
+      where: {
+        refresh_token: refreshToken,
+        user_id: decoded.userId,
+        refresh_expires_at: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!storedToken) {
+      return res.status(403).send("Invalid refresh token");
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } = await generateToken(decoded.userId, res, "internal", "auth");
+
+    res.status(200).json({
+      accessToken: accessToken,
+      refreshToken: newRefreshToken,
+    });
+  } catch (error) {
+    return res.status(403).send("Invalid refresh token");
   }
 };
 

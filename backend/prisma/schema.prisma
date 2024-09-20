@@ -8,17 +8,17 @@ datasource db {
 }
 
 model roles {
-  id         Int      @id @default(autoincrement())
-  role_name  String   @db.VarChar(50)
+  id         Int       @id @default(autoincrement())
+  role_name  String    @db.VarChar(50)
   status     Int?
-  created_at DateTime @default(now())
+  created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   users      users[]
 }
 
 model users {
   id             Int             @default(autoincrement())
-  user_id        Int          @id
+  user_id        Int             @id
   first_name     String
   middle_name    String?
   last_name      String? // Nullable, as it may not be used for SSO users
@@ -32,7 +32,7 @@ model users {
   role_id        Int?
   status         Int?
   created_at     DateTime        @default(now())
-  updated_at     DateTime?        @updatedAt
+  updated_at     DateTime?       @updatedAt
   roles          roles?          @relation(fields: [role_id], references: [id])
   auth_methods   auth_methods[]
   tokens         tokens[]
@@ -50,27 +50,28 @@ model users {
 }
 
 model auth_methods {
-  id          Int      @id @default(autoincrement())
-  provider    String   @db.VarChar(50) // 'internal', 'microsoft_sso', etc.
-  provider_id String?  @unique // Nullable, used for SSO (e.g., Microsoft's user ID)
+  id          Int       @id @default(autoincrement())
+  provider    String    @db.VarChar(50) // 'internal', 'microsoft_sso', etc.
+  provider_id String?   @unique // Nullable, used for SSO (e.g., Microsoft's user ID)
   user_id     Int
-  users       users    @relation(fields: [user_id], references: [user_id])
-  created_at  DateTime @default(now())
+  users       users     @relation(fields: [user_id], references: [user_id])
+  created_at  DateTime  @default(now())
   updated_at  DateTime? @updatedAt
 
   @@unique([user_id, provider])
 }
 
 model tokens {
-  id            Int      @id @default(autoincrement())
-  token         String   @db.Text
-  refresh_token String?  @db.Text
-  expires_at    DateTime
-  user_id       Int   
-  token_type    String // 'auth' for authentication, 'reset' for password reset
-  users         users    @relation(fields: [user_id], references: [user_id])
-  created_at    DateTime @default(now())
-  updated_at    DateTime? @updatedAt
+  id                 Int       @id @default(autoincrement())
+  token              String    @db.Text
+  refresh_token      String?   @db.Text
+  expires_at         DateTime
+  refresh_expires_at DateTime  @db.Timestamp(6)
+  user_id            Int
+  token_type         String // 'auth' for authentication, 'reset' for password reset
+  users              users     @relation(fields: [user_id], references: [user_id])
+  created_at         DateTime  @default(now())
+  updated_at         DateTime? @updatedAt
 
   @@index([user_id])
 }
@@ -83,7 +84,7 @@ model attendance {
   clock_out  DateTime?
   users      users     @relation(fields: [user_id], references: [user_id])
   created_at DateTime  @default(now())
-  updated_at DateTime?  @updatedAt
+  updated_at DateTime? @updatedAt
 
   @@index([user_id])
 }
@@ -101,21 +102,21 @@ model tasks {
   boss        users     @relation("AssignedBy", fields: [assigned_by], references: [user_id])
   reports     reports[]
   created_at  DateTime  @default(now())
-  updated_at  DateTime?  @updatedAt
+  updated_at  DateTime? @updatedAt
 
   @@index([assigned_to])
   @@index([assigned_by])
 }
 
 model reports {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   task_id     Int
   reported_by Int
-  report_text String   @db.Text
+  report_text String    @db.Text
   status      Int?
-  users       users    @relation(fields: [reported_by], references: [user_id])
-  tasks       tasks    @relation(fields: [task_id], references: [id])
-  created_at  DateTime @default(now())
+  users       users     @relation(fields: [reported_by], references: [user_id])
+  tasks       tasks     @relation(fields: [task_id], references: [id])
+  created_at  DateTime  @default(now())
   updated_at  DateTime? @updatedAt
 
   @@index([task_id])
@@ -123,12 +124,12 @@ model reports {
 }
 
 model notifications {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   user_id     Int
-  message     String   @db.Text
-  read_status Boolean  @default(false)
-  users       users    @relation(fields: [user_id], references: [user_id])
-  created_at  DateTime @default(now())
+  message     String    @db.Text
+  read_status Boolean   @default(false)
+  users       users     @relation(fields: [user_id], references: [user_id])
+  created_at  DateTime  @default(now())
   updated_at  DateTime? @updatedAt
 
   @@index([user_id])
@@ -142,7 +143,7 @@ model companies {
   phone       String?       @db.VarChar(20)
   status      Int?
   created_at  DateTime      @default(now())
-  updated_at  DateTime?      @updatedAt
+  updated_at  DateTime?     @updatedAt
   departments departments[]
   users       users[]
 }
@@ -153,7 +154,7 @@ model departments {
   company_id Int
   status     Int?
   created_at DateTime    @default(now())
-  updated_at DateTime?    @updatedAt
+  updated_at DateTime?   @updatedAt
   companies  companies   @relation(fields: [company_id], references: [id])
   positions  positions[]
   users      users[]
@@ -166,7 +167,7 @@ model positions {
   dept_id           Int
   status            Int?
   created_at        DateTime        @default(now())
-  updated_at        DateTime?        @updatedAt
+  updated_at        DateTime?       @updatedAt
   departments       departments     @relation(fields: [dept_id], references: [id])
   position_levels   position_levels @relation(fields: [position_level_id], references: [id])
   users             users[]
@@ -181,7 +182,7 @@ model position_levels {
   level_order Int // Numeric order to define hierarchy (e.g., 1 for Entry, 2 for Mid, 3 for Senior, 4 for Director)
   status      Int?
   created_at  DateTime    @default(now())
-  updated_at  DateTime?    @updatedAt
+  updated_at  DateTime?   @updatedAt
   positions   positions[]
 
   @@index([level_order])

@@ -1,8 +1,10 @@
 <template>
   <div class="relative inline-block w-full" ref="dropdown">
     <button
+      type="button"
       @click="toggleDropdown"
-      class="w-full bg-gray-700 p-2 rounded-lg flex justify-between items-center"
+      :disabled="disabled"
+      class="w-full bg-gray-700 p-2 rounded-lg flex justify-between items-center "
     >
       <span>{{ selectedLabel || placeholder }}</span>
       <svg
@@ -21,7 +23,7 @@
     <transition name="dropdown">
       <div
         v-if="isOpen"
-        class="absolute mt-1 w-full bg-gray-800 border border-gray-300 rounded-lg shadow-lg z-10"
+        class="absolute mt-1 w-full bg-gray-800 border border-gray-300 focus:ring-gray-300 rounded-lg shadow-lg z-10"
       >
         <ul>
           <li
@@ -31,6 +33,9 @@
             class="p-2 hover:bg-gray-900 cursor-pointer"
           >
             {{ option[labelKey] }}
+          </li>
+          <li v-if="!options.length" class="p-2 text-gray-500 text-sm">
+            No options available
           </li>
         </ul>
       </div>
@@ -62,6 +67,10 @@ const props = defineProps({
     type: String,
     default: "Select an option",
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -71,7 +80,9 @@ const selectedLabel = ref("");
 const dropdown = ref(null);
 
 const toggleDropdown = () => {
-  isOpen.value = !isOpen.value;
+  if (!props.disabled) {
+    isOpen.value = !isOpen.value;
+  }
 };
 
 const selectOption = (option) => {

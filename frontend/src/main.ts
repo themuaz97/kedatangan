@@ -39,6 +39,7 @@ import Row from 'primevue/row'
 import Modal from './components/Modal.vue'
 import Checkbox from './components/Checkbox.vue'
 import Radio from './components/Radio.vue'
+import Switch from './components/Switch.vue'
 
 const app = createApp(App);
 
@@ -75,6 +76,7 @@ app.component('Radio', Radio)
 app.component('Row', Row)
 app.component('Select', Select)
 app.component('Stepper', Stepper)
+app.component('Switch', Switch)
 app.component('Tab', Tab)
 app.component('TabList', TabList)
 app.component('TabPanels', TabPanels)

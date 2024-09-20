@@ -39,25 +39,15 @@
             Company
           </label>
           <div>
-            <select
+            <Dropdown
               v-model="companyId"
               id="companyId"
-              class="bg-gray-700 border border-gray-600 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              :class="{
-                'border-red-500': submitted && !companyId,
-                'border-gray-600': !(submitted && !companyId),
-              }"
+              :options="companies"
+              labelKey="name"
+              valueKey="id"
+              class="bg-gray-700 border border-gray-600 text-gray-200 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full"
               placeholder="Select a company"
-            >
-              <option value="" disabled>Select a company</option>
-              <option
-                v-for="company in companies"
-                :key="company.id"
-                :value="company.id"
-              >
-                {{ company.name }}
-              </option>
-            </select>
+            />
           </div>
           <small
             v-if="submitted && !companyId"
@@ -67,11 +57,19 @@
           </small>
         </div>
         <div class="flex justify-end gap-2">
-          <button type="button" @click="openModalAdd" class="bg-white text-black hover:bg-slate-500 hover:text-white p-2 px-4 rounded-lg transition-colors duration-300">Cancel</button>
-          <button 
-          type="submit" 
-          class="bg-indigo-500 hover:bg-indigo-400 p-2 px-4 rounded-lg transition-colors duration-300"
-          >Save</button>
+          <button
+            type="button"
+            @click="openModalAdd"
+            class="bg-white text-black hover:bg-slate-500 hover:text-white p-2 px-4 rounded-lg transition-colors duration-300"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="bg-indigo-500 hover:bg-indigo-400 p-2 px-4 rounded-lg transition-colors duration-300"
+          >
+            Save
+          </button>
         </div>
       </form>
     </template>

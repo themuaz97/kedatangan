@@ -43,6 +43,10 @@
     
     <p class="mt-4">Selected Option: {{ selectedOptions }}</p>
   </div>
+
+  <div>
+    <Switch v-model="isActive" label="Activate"></Switch>
+  </div>
 </template>
 
 <script setup>
@@ -59,4 +63,6 @@ const selectedOption = ref(null);
 const isChecked = ref(false)
 
 const selectedOptions = ref('option1')
+
+const isActive = ref(false);
 </script>
