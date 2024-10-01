@@ -40,8 +40,20 @@ import Modal from './components/Modal.vue'
 import Checkbox from './components/Checkbox.vue'
 import Radio from './components/Radio.vue'
 import Switch from './components/Switch.vue'
+import { setupSocket } from './services/socket.ts'
 
 const app = createApp(App);
+
+// Setup Socket and handle notifications
+setupSocket((data) => {
+  // Display notification here or use a Toast component
+  app.config.globalProperties.$toast.add({ 
+    severity: 'info', 
+    summary: 'Notification', 
+    detail: data.message, 
+    life: 3000 
+  });
+});
 
 app.use(router);
 app.use(PrimeVue, {

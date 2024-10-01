@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import prisma from "../db/prisma.js";
 import bcrypt from "bcrypt";
+import { sendNotification } from "../utils/socket.js";
+import { NotificationType } from "@prisma/client";
 
 // roles
 export const getRoles = async (req: Request, res: Response) => {
@@ -35,6 +37,7 @@ export const addRole = async (req: Request, res: Response) => {
     });
 
     if (role) {
+      await sendNotification(req, `Role "${name}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(role);
     } 
   } catch (error: any) {
@@ -61,6 +64,7 @@ export const updateRole = async (req: Request, res: Response) => {
     });
 
     if (role) {
+      await sendNotification(req, `Role "${roleName}" updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       return res.status(200).json(role);
     } else {
       return res.status(404).json({ error: "Role not found" });
@@ -85,6 +89,7 @@ export const deleteRole = async (req: Request, res: Response) => {
     });
 
     if (role) {
+      await sendNotification(req, `Role "${role.role_name}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(role);
     } else {
       return res.status(404).json({ error: "Role not found" });
@@ -155,6 +160,7 @@ export const addCompany = async (req: Request, res: Response) => {
     });
 
     if (company) {
+      await sendNotification(req, `Company "${company.name}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(company);
     } else {
       return res.status(404).json({ error: "company not found" });
@@ -169,7 +175,7 @@ export const updateCompany = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { name, address, email, phone } = req.body;
 
-    if (!name || !address || !email || !phone) {
+    if (!name || !email || !phone) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -186,6 +192,7 @@ export const updateCompany = async (req: Request, res: Response) => {
     });
 
     if (company) {
+      await sendNotification(req, `Company "${company.name}" updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(company);
     } else {
       return res.status(404).json({ error: "company not found" });
@@ -209,6 +216,7 @@ export const deleteCompany = async (req: Request, res: Response) => {
     });
 
     if (company) {
+      await sendNotification(req, `Company "${company.name}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(company);
     } else {
       return res.status(404).json({ error: "company not found" });
@@ -284,6 +292,7 @@ export const addDepartment = async (req: Request, res: Response) => {
     });
 
     if (department) {
+      await sendNotification(req, `Department "${department.name}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(department);
     } else {
       return res.status(404).json({ error: "department not found" });
@@ -314,6 +323,7 @@ export const updateDepartment = async (req: Request, res: Response) => {
     });
 
     if (department) {
+      await sendNotification(req, `Department "${department.name}" updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(department);
     } else {
       return res.status(404).json({ error: "department not found" });
@@ -337,6 +347,7 @@ export const deleteDepartment = async (req: Request, res: Response) => {
     });
 
     if (department) {
+      await sendNotification(req, `Department "${department.name}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(department);
     } else {
       return res.status(404).json({ error: "department not found" });
@@ -406,6 +417,7 @@ export const addPosition = async (req: Request, res: Response) => {
     });
 
     if (position) {
+      await sendNotification(req, `Position "${position.name}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(position);
     } else {
       return res.status(404).json({ error: "position not found" });
@@ -434,6 +446,7 @@ export const updatePosition = async (req: Request, res: Response) => {
     });
 
     if (position) {
+      await sendNotification(req, `Position "${position.name}" updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(position);
     } else {
       return res.status(404).json({ error: "position not found" });
@@ -457,6 +470,7 @@ export const deletePosition = async (req: Request, res: Response) => {
     });
 
     if (position) {
+      await sendNotification(req, `Position "${position.name}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(position);
     } else {
       return res.status(404).json({ error: "position not found" });
@@ -525,6 +539,7 @@ export const addPositionLevel = async (req: Request, res: Response) => {
     });
 
     if (positionLevel) {
+      await sendNotification(req, `Position Level "${positionLevel.name}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(positionLevel);
     } else {
       return res.status(404).json({ error: "position level not found" });
@@ -553,6 +568,7 @@ export const updatePositionLevel = async (req: Request, res: Response) => {
     });
 
     if (position) {
+      await sendNotification(req, `Position Level "${position.name}" Updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(position);
     } else {
       return res.status(404).json({ error: "position not found" });
@@ -576,6 +592,7 @@ export const deletePositionLevel = async (req: Request, res: Response) => {
     });
 
     if (positionLevel) {
+      await sendNotification(req, `Position Level "${positionLevel}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(positionLevel);
     } else {
       return res.status(404).json({ error: "position level not found" });
@@ -705,6 +722,7 @@ export const addUser = async (req: Request, res: Response) => {
     });
 
     if (user) {
+      await sendNotification(req, `User "${user.username}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(user);
     }
   } catch (error: any) {
@@ -754,6 +772,7 @@ export const updateUser = async (req: Request, res: Response) => {
     });
 
     if (user) {
+      await sendNotification(req, `User "${user.username}" updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(user);
     } else {
       return res.status(404).json({ error: "User not found" });
@@ -780,6 +799,7 @@ export const deleteUser = async (req: Request, res: Response) => {
       }
     });
 
+    await sendNotification(req, `User "${user.username}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
     res.status(200).json(user);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to delete user" });

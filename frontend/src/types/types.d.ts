@@ -35,4 +35,14 @@ declare global {
       name: string
     }
   }
+
+  export type AppNotification = {
+    id: number;
+    message: string;
+    notification_type?: string;
+    link?: string;
+    seen?: boolean;
+    read_status?: boolean;
+    created_at?: string;
+  }
 }

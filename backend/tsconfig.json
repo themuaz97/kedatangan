@@ -3,6 +3,7 @@
     "target": "ES2020",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "outDir": "./dist",
     "rootDir": "./src",
@@ -12,6 +13,6 @@
   "ts-node": {
 		"esm": true
 	},
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/types", "firebase.ts"],
   "exclude": ["node_modules"]
 }

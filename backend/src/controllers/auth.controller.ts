@@ -6,6 +6,7 @@ import { generateToken } from "../utils/token.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { generateRandomUserId } from "../utils/generateUserId.js";
+import { Provider } from "@prisma/client";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -98,13 +99,16 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).send("Incorrect password");
     }
 
-    const { accessToken, refreshToken } = await generateToken(user.user_id, res, "internal", "auth");
+    const { accessToken, refreshToken } = await generateToken(user.user_id, res, Provider.internal, "auth");
     
     res.status(200).json({
-      username: user.username,
-      email: user.email,
-      accessToken: accessToken,
-      refreshToken: refreshToken,
+      user: {
+        username: user.username,
+        email: user.email,
+        role_id: user.role_id
+      },
+      accessToken,
+      refreshToken
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -171,6 +175,7 @@ export const getLoggedUser = async (req: Request, res: Response) => {
       address: user.address,
       gender: user.gender,
       profile_img: user.profile_img,
+      role_id: user.role_id,
       role: user.roles?.role_name,           // Get the role name
       company: user.companies?.name,     // Get the company name
       department: user.departments?.name, // Get the department name
@@ -366,14 +371,14 @@ export const redirect = (req: Request, res: Response) => {
           username: response.account.username as string,
           auth_methods: {
             create: {
-              provider: 'microsoft',
+              provider: Provider.microsoft, // jangan delete ni nanti ada double data dekat auth_methods
               provider_id: response.account.localAccountId
             }
           }
         }
       });
 
-      await generateToken(user.user_id, res, 'microsoft', 'auth');
+      await generateToken(user.user_id, res, Provider.microsoft, 'auth');
 
       res.redirect(`${process.env.FRONTEND_URL}/profile`);
     } else {

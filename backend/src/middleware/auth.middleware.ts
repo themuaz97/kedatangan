@@ -6,13 +6,11 @@ import prisma from "../db/prisma.js";
 
 declare global {
   namespace Express {
-    interface Request {
-      user?: AccountInfo;
-    }
-
     export interface Request {
+      user?: AccountInfo;
       users?: {
         user_id: number;
+        role_id?: number;
       };
     }
   }
@@ -122,11 +120,24 @@ export const protectRoute = async (
     }
 
     // 4. Attach the user to the request object
-    req.users = user;
+    req.users = {
+      user_id: user.user_id,
+      role_id: user.role_id || 0,
+    };
 
     // 5. Call the next middleware or route handler
     next();
   } catch (error: any) {
     res.status(500).send(error.message || "An error occurred");
   }
+};
+
+export const protectRouteAdmin = (req: Request, res: Response, next: NextFunction) => {
+  // Check if the user is attached to the request (from `protectRoute` middleware)
+  if (!req.users || req.users.role_id !== 1) {
+    return res.status(403).json({ error: "Unauthorized, you are not an admin" });
+  }
+
+  // User is admin, proceed to the next middleware or route handler
+  next();
 };

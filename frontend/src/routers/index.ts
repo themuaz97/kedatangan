@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
 import Layout from '@/layout/Layout.vue';
 import AuthLayout from '../layout/AuthLayout.vue';
 import { useAuthStore } from '../stores/auth.store';
@@ -21,7 +21,23 @@ const routes = [
       {
         path: '/configuration',
         name: 'configuration',
-        component: () => import('@/views/pages/configurations/ConfigTab.vue')
+        component: () => import('@/views/pages/configurations/ConfigTab.vue'),
+        beforeEnter: async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+          const authStore = useAuthStore();
+
+          // Check if the user data has been fetched, if not, fetch it.
+          if (!authStore.user) {
+            await authStore.fetchUser(); // Make sure user data is loaded
+          }
+
+          // Proceed based on role
+          if (authStore.user && authStore.user.role_id === 1) {
+            console.log("Access granted to Configuration");
+            next(); // Allow access for admin users (role_id === 1)
+          } else {
+            next('/'); // Redirect non-admin users to home or another page
+          }
+        },
       }
     ]
   },
@@ -57,19 +73,5 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
-
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore()
-  
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!authStore.isAuthenticated) {
-      next({ name: 'login' })
-    } else {
-      next()
-    }
-  } else {
-    next()
-  }
-})
 
 export default router;

@@ -7,7 +7,7 @@
   top: 0;
   height: 100%;
   padding: 20px;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   margin-top: 60px;
   transition: transform 0.3s ease, left 0.3s ease;
 }
@@ -22,16 +22,17 @@
   padding: 0;
   width: 100%;
 }
+
 .sidebar li {
   width: 100%;
   padding: 10px;
+  border-radius: 10px; /* Explicitly set border-radius here */
   transition: background-color 0.3s, color 0.3s;
 }
 
 .sidebar li:hover {
-  background-color: #6b21a8; 
-  color: #ffffff; 
-  border-radius: 10px;
+  background-color: #6b21a8;
+  color: #ffffff;
 }
 
 .sidebar ul li a {

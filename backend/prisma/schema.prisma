@@ -8,12 +8,13 @@ datasource db {
 }
 
 model roles {
-  id         Int       @id @default(autoincrement())
-  role_name  String    @db.VarChar(50)
-  status     Int?
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  users      users[]
+  id            Int             @id @default(autoincrement())
+  role_name     String          @db.VarChar(50)
+  status        Int?
+  created_at    DateTime        @default(now())
+  updated_at    DateTime?       @updatedAt
+  users         users[]
+  notifications notifications[]
 }
 
 model users {
@@ -28,7 +29,7 @@ model users {
   gender         String?         @db.VarChar(10)
   email          String          @unique
   phone_no       String?         @unique @db.VarChar(15)
-  profile_img    String?         @db.Text
+  profile_img    String?         
   role_id        Int?
   status         Int?
   created_at     DateTime        @default(now())
@@ -51,7 +52,7 @@ model users {
 
 model auth_methods {
   id          Int       @id @default(autoincrement())
-  provider    String    @db.VarChar(50) // 'internal', 'microsoft_sso', etc.
+  provider    Provider? // 'internal', 'microsoft_sso', etc.
   provider_id String?   @unique // Nullable, used for SSO (e.g., Microsoft's user ID)
   user_id     Int
   users       users     @relation(fields: [user_id], references: [user_id])
@@ -59,6 +60,11 @@ model auth_methods {
   updated_at  DateTime? @updatedAt
 
   @@unique([user_id, provider])
+}
+
+enum Provider {
+  internal
+  microsoft
 }
 
 model tokens {
@@ -124,15 +130,26 @@ model reports {
 }
 
 model notifications {
-  id          Int       @id @default(autoincrement())
-  user_id     Int
-  message     String    @db.Text
-  read_status Boolean   @default(false)
-  users       users     @relation(fields: [user_id], references: [user_id])
-  created_at  DateTime  @default(now())
-  updated_at  DateTime? @updatedAt
+  id                Int               @id @default(autoincrement())
+  user_id           Int?
+  role_id           Int?
+  message           String            @db.Text
+  notification_type NotificationType?
+  link              String            @db.Text
+  seen              Boolean           @default(false)
+  read_status       Boolean           @default(false)
+  users             users?            @relation(fields: [user_id], references: [user_id])
+  roles             roles?            @relation(fields: [role_id], references: [id])
+  created_at        DateTime          @default(now())
+  updated_at        DateTime?         @updatedAt
 
-  @@index([user_id])
+  // @@index([user_id])
+}
+
+enum NotificationType {
+  add
+  update
+  delete
 }
 
 model companies {

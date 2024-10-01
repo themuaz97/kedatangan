@@ -19,6 +19,8 @@ declare module 'vue' {
     Listbox: typeof import('primevue/listbox')['default']
     Menu: typeof import('primevue/menu')['default']
     Modal: typeof import('./src/components/Modal.vue')['default']
+    Notification: typeof import('./src/components/Notification.vue')['default']
+    NotificationDropdown: typeof import('./src/components/NotificationDropdown.vue')['default']
     Project: typeof import('./src/components/Project.vue')['default']
     Radio: typeof import('./src/components/Radio.vue')['default']
     RadioButton: typeof import('primevue/radiobutton')['default']

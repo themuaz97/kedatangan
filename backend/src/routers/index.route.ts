@@ -1,18 +1,20 @@
 import express from 'express';
 import { updateMe } from '../controllers/users.controller.js';
 import { addCompany, addDepartment, addPosition, addPositionLevel, addRole, addUser, deleteCompany, deleteDepartment, deletePosition, deletePositionLevel, deleteRole, deleteUser, getcompanies, getCompanyById, getDepartmentById, getDepartments, getPositionById, getPositionLevelById, getPositionLevels, getPositions, getRoles, getRolesById, getUsers, updateCompany, updateDepartment, updatePosition, updatePositionLevel, updateRole, updateUser } from '../controllers/configuration.controller.js';
-import { protectRoute } from '../middleware/auth.middleware.js';
+import { protectRoute, protectRouteAdmin } from '../middleware/auth.middleware.js';
+import { registeredUsers } from '../controllers/dashboard.controller.js';
+import { getNotifications, markNotificationAsRead, markNotificationsAsSeen } from '../controllers/notification.controller.js';
 
 const router = express.Router();
 
-router.post('/roles/add', addRole)
 router.use(protectRoute);
 
 // account routes
 router.put('/account/update', updateMe);
 
 // configurations routes
-router.get('/roles', getRoles)
+router.get('/roles', protectRouteAdmin, getRoles)
+router.post('/roles/add', addRole)
 router.get('/roles/:id/view', getRolesById)
 router.put('/roles/:id/update', updateRole)
 router.put('/roles/:id/delete', deleteRole)
@@ -45,5 +47,14 @@ router.get('/users', getUsers);
 router.post('/user/add', addUser);
 router.put('/user/:id/update', updateUser);
 router.put('/user/:id/delete', deleteUser);
+
+// dashboard modules
+router.get('/registered-users', registeredUsers);
+
+// notification
+router.get('/notifications', getNotifications);
+router.put('/notifications/seen', markNotificationsAsSeen)
+router.put('/notification/:id/read', markNotificationAsRead)
+
 
 export { router as indexRouter }

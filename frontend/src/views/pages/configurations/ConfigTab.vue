@@ -4,6 +4,7 @@ import Users from './users/Users.vue';
 import Companies from './companies/Companies.vue';
 import Departments from './departments/Departments.vue';
 import PositionLevels from './positionLevel/PositionLevels.vue';
+import Notification from './notification/Notification.vue';
 </script>
 
 <template>
@@ -16,6 +17,7 @@ import PositionLevels from './positionLevel/PositionLevels.vue';
                 <Tab value="3">Position Level</Tab>
                 <Tab value="4">Positions</Tab>
                 <Tab value="5">Users</Tab>
+                <Tab value="6">Notifications</Tab>
             </TabList>
             <TabPanels>
                 <TabPanel value="0">
@@ -39,6 +41,11 @@ import PositionLevels from './positionLevel/PositionLevels.vue';
                 <TabPanel value="5">
                     <p class="m-0">
                         <Users />
+                    </p>
+                </TabPanel>
+                <TabPanel value="6">
+                    <p class="m-0">
+                        <Notification />
                     </p>
                 </TabPanel>
             </TabPanels>

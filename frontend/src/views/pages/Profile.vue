@@ -14,6 +14,7 @@ const submitted = ref(false);
 
 // Store initial user data
 const initialUser = ref<User | null>(null);
+const imageFile = ref<File | null>(null); // To store the uploaded image file
 
 // Form fields
 const firstName = ref("");
@@ -70,11 +71,25 @@ const isFormChanged = computed(() => {
     email.value !== initialUser.value?.email ||
     phoneNo.value !== initialUser.value?.phone_no ||
     address.value !== initialUser.value?.address ||
-    gender.value !== initialUser.value?.gender
+    gender.value !== initialUser.value?.gender ||
+    imageFile.value !== null // Include image file change
   );
 });
 
-const previewImage = (event: Event) => {};
+const previewImage = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    imageFile.value = target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imgElement = document.getElementById("profileImage") as HTMLImageElement;
+      if (imgElement) {
+        imgElement.src = e.target!.result as string;
+      }
+    };
+    reader.readAsDataURL(target.files[0]);
+  }
+};
 
 const initials = computed(() => {
   if (user.value) {
@@ -93,24 +108,23 @@ const handleSubmit = async () => {
   submitted.value = true;
   if (!isFormChanged.value) return;
 
+  const formData = new FormData(); // Use FormData to send files
+  formData.append("profile_img", imageFile.value!); // Append image file
+  formData.append("first_name", firstName.value);
+  formData.append("middle_name", middleName.value);
+  formData.append("last_name", lastName.value);
+  formData.append("username", username.value);
+  formData.append("email", email.value);
+  formData.append("phone_no", phoneNo.value);
+  formData.append("address", address.value);
+  formData.append("gender", gender.value);
+
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}/api/account/update`,
     {
       method: "PUT",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        first_name: firstName.value,
-        middle_name: middleName.value,
-        last_name: lastName.value,
-        username: username.value,
-        email: email.value,
-        phone_no: phoneNo.value,
-        address: address.value,
-        gender: gender.value,
-      }),
+      body: formData, // Send FormData
     }
   );
 
@@ -154,6 +168,7 @@ onMounted(() => {
               />
               <!-- Display the profile image if available -->
               <img
+                id="profileImage"
                 v-if="user?.profile_img"
                 :src="user?.profile_img"
                 alt="profile"
@@ -161,12 +176,12 @@ onMounted(() => {
               />
               <!-- Placeholder for upload button if no image is available -->
               <div
-            v-else
-            class="w-32 h-32 flex items-center justify-center text-white rounded-full text-6xl"
-            :style="{ backgroundColor: getRandomColor() }"
-          >
-            {{ initials }}
-          </div>
+                v-else
+                class="w-32 h-32 flex items-center justify-center text-white rounded-full text-6xl"
+                :style="{ backgroundColor: getRandomColor() }"
+              >
+                {{ initials }}
+              </div>
             </label>
             <span class="font-bold text-xl">{{ user?.username }}</span>
             <span>{{ user?.position }}</span>

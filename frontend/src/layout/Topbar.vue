@@ -3,6 +3,7 @@ import { useToast } from "primevue/usetoast";
 import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { getRandomColor } from "../utils/profileImg";
+import NotificationDropdown from "../components/NotificationDropdown.vue";
 
 const router = useRouter();
 const menu = ref();
@@ -40,6 +41,8 @@ const topbarItems = ref([
           router.push({ name: "login" });
         });
       } catch (error: any) {
+        console.log("error",error);
+        
         toast.add({
           severity: "error",
           summary: "error while logging out",
@@ -117,7 +120,7 @@ onMounted(() => {
     <div class="flex justify-end w-screen gap-3">
       <div class="flex items-center gap-3">
         <div>
-          <span class="material-symbols-rounded mt-2"> notifications </span>
+          <NotificationDropdown />
         </div>
         <div class="w-8 h-8 flex cursor-pointer" @click="toggle">
           <div

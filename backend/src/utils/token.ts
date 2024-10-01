@@ -62,14 +62,14 @@ export const generateToken = async (
   // 6. Set the JWT tokens as HTTP-only cookies
   res.cookie("jwt", accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: process.env.NODE_ENV === "development",
+    sameSite: "none",
     maxAge: 20 * 60 * 1000, // 20 minutes
   });
 
   res.cookie("refreshJwt", refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "development",
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
