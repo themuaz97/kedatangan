@@ -58,7 +58,6 @@ export const register = async (req: Request, res: Response) => {
         password: hashedPassword,
         profile_img: profileImgUrl,
         role_id: roleId,
-        status: 1,
       },
     });
 
@@ -128,7 +127,7 @@ export const logout = async (req: Request, res: Response) => {
 
       await prisma.tokens.deleteMany({
         where: {
-          token: token,
+          access_token: token,
           user_id: parseInt(decodedToken.userId, 10),
         },
       });
@@ -200,7 +199,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       where: {
         refresh_token: refreshToken,
         user_id: decoded.userId,
-        refresh_expires_at: {
+        refresh_expired_at: {
           gt: new Date(),
         },
       },
@@ -302,10 +301,10 @@ export const resetPassword = async (req: Request, res: Response) => {
     // Check if the token exists in the database and has not expired
     const tokenRecord = await prisma.tokens.findFirst({
       where: {
-        token: token,
+        access_token: token,
         token_type: "reset",
         user_id: userId,
-        expires_at: {
+        expired_at: {
           gte: new Date(),
         },
       },

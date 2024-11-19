@@ -46,10 +46,10 @@ export const generateToken = async (
   // 5. Store the tokens in the database
   await prisma.tokens.create({
     data: {
-      token: accessToken,
+      access_token: accessToken,
       refresh_token: refreshToken,
-      expires_at: accessExpiresAt,
-      refresh_expires_at: refreshExpiresAt,
+      expired_at: accessExpiresAt,
+      refresh_expired_at: refreshExpiresAt,
       token_type,
       users: {
         connect: {
