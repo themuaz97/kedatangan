@@ -4,14 +4,13 @@ import prisma from "../db/prisma.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/token.js";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import { generateRandomUserId } from "../utils/generateUserId.js";
 import { Provider } from "@prisma/client";
+import { transporter } from "../config/emailConfig.js";
 
 export const register = async (req: Request, res: Response) => {
   try {
     const {
-      userId,
       firstName,
       lastName,
       username,
@@ -22,7 +21,6 @@ export const register = async (req: Request, res: Response) => {
     } = req.body;
 
     if (
-      !userId ||
       !firstName ||
       !lastName ||
       !username ||
@@ -30,18 +28,26 @@ export const register = async (req: Request, res: Response) => {
       !password ||
       !roleId
     ) {
-      return res.status(400).send("All fields are required");
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     if (password !== confirmPassword) {
-      return res.status(400).send("Passwords do not match");
+      return res.status(400).json({ message: "Passwords do not match" });
     }
 
     const user = await prisma.users.findUnique({ where: { email: email } });
 
     if (user) {
-      return res.status(400).send("User already exists");
+      return res.status(400).json({ message: "User already exists" });
     }
+
+    const lastUser = await prisma.users.findFirst({
+      orderBy: {
+        user_id: "desc",
+      },
+    });
+
+    const newEmployeeId = lastUser ? lastUser.user_id + 1 : 1000;
 
     const salt = bcrypt.genSaltSync();
     const hashedPassword = bcrypt.hashSync(password, salt);
@@ -50,7 +56,7 @@ export const register = async (req: Request, res: Response) => {
 
     const newUser = await prisma.users.create({
       data: {
-        user_id: userId,
+        user_id: newEmployeeId,
         first_name: firstName,
         last_name: lastName,
         username: username,
@@ -61,33 +67,40 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    if (newUser) {
-      // const token = generateToken(newUser.user_id, res, "internal");
-      res.status(200).json({
-        username: newUser.username,
-        email: newUser.email,
-        // token: token,
-      });
-    }
+    const mailOptions = {
+      from: process.env.MAIL_USER,
+      to: newUser.email,
+      subject: "Welcome to Our Kedatangan App!",
+      text: `Hello ${newUser.first_name} ${newUser.last_name},\n\nWelcome to our app! We're excited to have you on board.\n\nFeel free to start exploring and reach out if you have any questions.
+        \n\nBest regards,\nKedatangan Support Team`,
+      html: `<p>Hello ${newUser.first_name} ${newUser.last_name},</p>
+               <p>Welcome to our app! We're excited to have you on board.</p>
+               <p>Feel free to start exploring and reach out if you have any questions.</p>
+               <p>Best regards,<br>Kedatangan Support Team</p>`,
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ username: newUser.username, email: newUser.email, role_id: newUser.role_id });
   } catch (error: any) {
     console.log("error in register", error);
-    res.status(500).send(error);
+    res.status(500).json(error);
   }
 };
 
-// TODO betulkan generateToken send ke headers bukan ke cookies
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).send("Email and password are required");
+      return res.status(400).json({ message: "Email and password are required" });
     }
 
     const user = await prisma.users.findUnique({ where: { email: email } });
 
     if (!user) {
-      return res.status(401).send("Invalid email or password");
+      return res.status(401).json({ message: "Invalid email!" });
     }
 
     const correctPassword = await bcrypt.compare(
@@ -96,7 +109,7 @@ export const login = async (req: Request, res: Response) => {
     );
 
     if (!correctPassword) {
-      return res.status(401).send("Incorrect password");
+      return res.status(401).json({ message: "Incorrect password"});
     }
 
     const { accessToken, refreshToken } = await generateToken(user.user_id, res, Provider.internal, "auth");
@@ -176,10 +189,10 @@ export const getLoggedUser = async (req: Request, res: Response) => {
       gender: user.gender,
       profile_img: user.profile_img,
       role_id: user.role_id,
-      role: user.roles?.role_name,           // Get the role name
-      company: user.companies?.name,     // Get the company name
-      department: user.departments?.name, // Get the department name
-      position: user.positions?.name,   // Get the position name
+      role: user.roles?.role_name,           
+      company: user.companies?.name,
+      department: user.departments?.name,
+      position: user.positions?.name,
     });
   } catch (error: any) {
     console.error("Failed to get logged user:", error);
@@ -191,7 +204,7 @@ export const refreshToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshJwt;
 
   if (!refreshToken) {
-    return res.status(401).send("Refresh token not found");
+    return res.status(401).json({ message: "Refresh token not found"});
   }
 
   try {
@@ -207,7 +220,7 @@ export const refreshToken = async (req: Request, res: Response) => {
     });
 
     if (!storedToken) {
-      return res.status(403).send("Invalid refresh token");
+      return res.status(403).json({ message: "Invalid refresh token"});
     }
 
     const { accessToken, refreshToken: newRefreshToken } = await generateToken(decoded.userId, res, "internal", "auth");
@@ -217,7 +230,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       refreshToken: newRefreshToken,
     });
   } catch (error) {
-    return res.status(403).send("Invalid refresh token");
+    return res.status(403).json({error});
   }
 };
 
@@ -226,40 +239,30 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json({ error: "Email is required" });
+      return res.status(400).json({ message: "Email is required" });
     }
 
     const user = await prisma.users.findUnique({ where: { email: email } });
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ message: "the email were not registered yet" });
     }
 
-    const token = await generateToken(user.user_id, res, "internal", "reset");
+    const { accessToken } = await generateToken(user.user_id, res, "internal", "reset");
 
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-
-    // Create a Nodemailer transporter
-    const transporter = nodemailer.createTransport({
-      host: "sandbox.smtp.mailtrap.io",
-      port: 2525,
-      auth: {
-        user: "9b81f2b6fa8179",
-        pass: "c020bc3a69c318"
-      }
-    });
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${accessToken}`;
 
     // Email options
     const mailOptions = {
-      from: "no-reply@yourdomain.com",
+      from: process.env.MAIL_HOST,
       to: user.email,
       subject: "Password Reset Request",
-      text: `Hello ${user.first_name},\n\nTo reset your password, please click the following link:\n${resetLink}\n\nIf you did not request a password reset, please ignore this email.\n\nBest regards,\nYour Company Name`,
+      text: `Hello ${user.first_name},\n\nTo reset your password, please click the following link:\n${resetLink}\n\nIf you did not request a password reset, please ignore this email.\n\nBest regards,\nKedatangan Support Team`,
       html: `<p>Hello ${user.first_name},</p>
              <p>To reset your password, please click the following link:</p>
              <a href="${resetLink}">${resetLink}</a>
              <p>If you did not request a password reset, please ignore this email.</p>
-             <p>Best regards,<br>Your Company Name</p>`,
+             <p>Best regards,<br>Kedatangan Support Team</p>`,
     };
 
     // Send the email
