@@ -4,7 +4,7 @@ import prisma from "../db/prisma.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/token.js";
 import jwt from "jsonwebtoken";
-import { generateRandomUserId } from "../utils/generateUserId.js";
+import { generateRandomUserId, generateUserId } from "../utils/generateUserId.js";
 import { Provider } from "@prisma/client";
 import { transporter } from "../config/emailConfig.js";
 
@@ -48,7 +48,7 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    const newEmployeeId = lastUser ? lastUser.user_id + 1 : 1000;
+    const newEmployeeId = await generateUserId();
 
     const salt = bcrypt.genSaltSync();
     const hashedPassword = bcrypt.hashSync(password, salt);
