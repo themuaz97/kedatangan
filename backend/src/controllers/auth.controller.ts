@@ -290,7 +290,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     try {
       decoded = jwt.verify(token, process.env.SECRET_KEY!);
     } catch (err) {
-      return res.status(400).json({ error: "Invalid or expired token" });
+      return res.status(401).json({ error: "Invalid or expired token" });
     }
 
     const userId = decoded.userId;
@@ -315,7 +315,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     });
 
     if (!tokenRecord) {
-      return res.status(400).json({ error: "Invalid or expired token" });
+      return res.status(401).json({ error: "Invalid or expired token" });
     }
 
     // Hash the new password
