@@ -1,6 +1,5 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
 import dotenv from 'dotenv';
 import { authRouter } from './routers/auth.route.js';
 import cors from 'cors';
@@ -13,20 +12,9 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app); // Create the server using http
 
+app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
-
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
-}));
-
-// Uncomment if you plan to use session management
-// app.use(session({
-//   secret: process.env.EXPRESS_SESSION_SECRET as string,
-//   resave: false,
-//   saveUninitialized: false
-// }));
 
 app.use('/api/auth', authRouter);
 app.use('/api', indexRouter);

@@ -1,7 +1,6 @@
 import { Server } from 'socket.io';
 import prisma from '../db/prisma.js';
 import { Request } from 'express';
-import { NotificationType } from '@prisma/client';
 
 let io: Server;
 
@@ -22,20 +21,18 @@ export const initSocket = (server: any) => {
   });
 };
 
-export const sendNotification = async (req: Request, message: string, notification_type: NotificationType, link: string) => {
+export const sendNotification = async (req: Request, message: string) => {
   try {
     // Save the notification to the database
     await prisma.notifications.create({
       data: {
         user_id: req.users?.user_id,
         message: message,
-        notification_type: notification_type,
-        link: link
       }
     });
 
     // Emit the notification to all connected clients
-    io.emit('notification', { message, notification_type });
+    io.emit('notification', { message });
   } catch (error) {
     console.error('Error sending notification:', error); // Log notification errors
   }

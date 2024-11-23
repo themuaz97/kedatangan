@@ -97,38 +97,43 @@ export const protectRoute = async (
 ) => {
   try {
     // 1. Get the JWT token from the request cookies
-    const token = req.cookies.jwt;
+    const bearerToken = req.headers.authorization;
+    const [type, token] = bearerToken?.split(" ") ?? [];
 
-    if (!token) {
-      return res.status(401).send("No token found, authorization denied");
+    if (!token || type !== 'Bearer') {
+      return res.status(401).json({ message: "No token found, authorization denied" });
     }
 
     // 2. Verify the token
-    const decoded = jwt.verify(token, process.env.SECRET_KEY!) as {
-      userId: string;
-    };
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.SECRET_KEY!) as { userId: number };
+    } catch (error) {
+      return res.status(401).json({ message: "Invalid token or expired token, authorization denied" }); // Token-related error
+    }
+
     const userId = decoded.userId;
 
     // 3. Fetch the user from the database
-    const user = await prisma.users.findUnique({
+    const user = await prisma.users.findFirst({
       where: { user_id: Number(userId) },
-      include: { roles: true }, // Include related models if needed
+      include: { roles: true },
     });
 
     if (!user) {
-      return res.status(401).send("Invalid token, authorization denied");
+      return res.status(401).json({ message: "Invalid token, authorization denied" });
     }
 
     // 4. Attach the user to the request object
     req.users = {
       user_id: user.user_id,
-      role_id: user.role_id || 0,
+      role_id: user.roles?.id,
     };
 
     // 5. Call the next middleware or route handler
     next();
   } catch (error: any) {
-    res.status(500).send(error.message || "An error occurred");
+    res.status(500).json(error.message || "An error occurred");
   }
 };
 

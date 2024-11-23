@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import prisma from "../db/prisma.js";
 import bcrypt from "bcrypt";
 import { sendNotification } from "../utils/socket.js";
-import { NotificationType } from "@prisma/client";
 
 // roles
 export const getRoles = async (req: Request, res: Response) => {
@@ -10,7 +9,7 @@ export const getRoles = async (req: Request, res: Response) => {
     const roles = await prisma.roles.findMany(
       {
         where: {
-          status: 1
+          is_active: true
         }
       }
     );
@@ -32,12 +31,10 @@ export const addRole = async (req: Request, res: Response) => {
     const role = await prisma.roles.create({
       data: {
         role_name: name,
-        status: 1
       }
     });
 
     if (role) {
-      await sendNotification(req, `Role "${name}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(role);
     } 
   } catch (error: any) {
@@ -64,7 +61,6 @@ export const updateRole = async (req: Request, res: Response) => {
     });
 
     if (role) {
-      await sendNotification(req, `Role "${roleName}" updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       return res.status(200).json(role);
     } else {
       return res.status(404).json({ error: "Role not found" });
@@ -84,12 +80,11 @@ export const deleteRole = async (req: Request, res: Response) => {
         id: Number(id),
       },
       data: {
-        status: 0
+        is_active: false
       }
     });
 
     if (role) {
-      await sendNotification(req, `Role "${role.role_name}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(role);
     } else {
       return res.status(404).json({ error: "Role not found" });
@@ -106,7 +101,7 @@ export const getRolesById = async (req: Request, res: Response) => {
     const role = await prisma.roles.findUnique({
       where: {
         id: Number(id),
-        status: 1
+        is_active: true
       }
     });
 
@@ -126,7 +121,7 @@ export const getcompanies = async (req: Request, res: Response) => {
     const companies = await prisma.companies.findMany(
       {
         where: {
-          status: 1
+          is_active: true
         }
       }
     );
@@ -155,12 +150,10 @@ export const addCompany = async (req: Request, res: Response) => {
         address,
         email,
         phone,
-        status: 1
       }
     });
 
     if (company) {
-      await sendNotification(req, `Company "${company.name}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(company);
     } else {
       return res.status(404).json({ error: "company not found" });
@@ -192,7 +185,6 @@ export const updateCompany = async (req: Request, res: Response) => {
     });
 
     if (company) {
-      await sendNotification(req, `Company "${company.name}" updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(company);
     } else {
       return res.status(404).json({ error: "company not found" });
@@ -211,12 +203,11 @@ export const deleteCompany = async (req: Request, res: Response) => {
         id: Number(id),
       },
       data: {
-        status: 0
+        is_active: false
       }
     });
 
     if (company) {
-      await sendNotification(req, `Company "${company.name}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(company);
     } else {
       return res.status(404).json({ error: "company not found" });
@@ -233,7 +224,7 @@ export const getCompanyById = async (req: Request, res: Response) => {
     const company = await prisma.companies.findUnique({
       where: {
         id: Number(id),
-        status: 1
+        is_active: true
       }
     });
 
@@ -253,7 +244,7 @@ export const getDepartments = async (req: Request, res: Response) => {
     const departments = await prisma.departments.findMany(
       {
         where: {
-          status: 1
+          is_active: true
         },
         include: {
           companies: {
@@ -287,12 +278,10 @@ export const addDepartment = async (req: Request, res: Response) => {
       data: {
         name,
         company_id: companyId,
-        status: 1
       }
     });
 
     if (department) {
-      await sendNotification(req, `Department "${department.name}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(department);
     } else {
       return res.status(404).json({ error: "department not found" });
@@ -323,7 +312,6 @@ export const updateDepartment = async (req: Request, res: Response) => {
     });
 
     if (department) {
-      await sendNotification(req, `Department "${department.name}" updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(department);
     } else {
       return res.status(404).json({ error: "department not found" });
@@ -342,12 +330,11 @@ export const deleteDepartment = async (req: Request, res: Response) => {
         id: Number(id)
       },
       data: {
-        status: 0
+        is_active: false
       }
     });
 
     if (department) {
-      await sendNotification(req, `Department "${department.name}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(department);
     } else {
       return res.status(404).json({ error: "department not found" });
@@ -364,7 +351,7 @@ export const getDepartmentById = async (req: Request, res: Response) => {
     const department = await prisma.departments.findUnique({
       where: {
         id: Number(id),
-        status: 1
+        is_active: true
       }
     });
 
@@ -384,7 +371,7 @@ export const getPositions = async (req: Request, res: Response) => {
     const positions = await prisma.positions.findMany(
       {
         where: {
-          status: 1
+          is_active: true
         }
       }
     );
@@ -412,12 +399,10 @@ export const addPosition = async (req: Request, res: Response) => {
         name,
         dept_id: deptId,
         position_level_id: positionLevel,
-        status: 1
       }
     });
 
     if (position) {
-      await sendNotification(req, `Position "${position.name}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(position);
     } else {
       return res.status(404).json({ error: "position not found" });
@@ -446,7 +431,6 @@ export const updatePosition = async (req: Request, res: Response) => {
     });
 
     if (position) {
-      await sendNotification(req, `Position "${position.name}" updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(position);
     } else {
       return res.status(404).json({ error: "position not found" });
@@ -465,12 +449,11 @@ export const deletePosition = async (req: Request, res: Response) => {
         id
       },
       data: {
-        status: 0
+        is_active: false
       }
     });
 
     if (position) {
-      await sendNotification(req, `Position "${position.name}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(position);
     } else {
       return res.status(404).json({ error: "position not found" });
@@ -487,7 +470,7 @@ export const getPositionById = async (req: Request, res: Response) => {
     const position = await prisma.positions.findUnique({
       where: {
         id: Number(id),
-        status: 1
+        is_active: true
       }
     });
 
@@ -507,7 +490,7 @@ export const getPositionLevels = async (req: Request, res: Response) => {
     const positionLevel = await prisma.position_levels.findMany(
       {
         where: {
-          status: 1
+          is_active: true
         }
       }
     );
@@ -534,12 +517,10 @@ export const addPositionLevel = async (req: Request, res: Response) => {
       data: {
         name,
         level_order: levelOrder,
-        status: 1
       }
     });
 
     if (positionLevel) {
-      await sendNotification(req, `Position Level "${positionLevel.name}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(positionLevel);
     } else {
       return res.status(404).json({ error: "position level not found" });
@@ -568,7 +549,6 @@ export const updatePositionLevel = async (req: Request, res: Response) => {
     });
 
     if (position) {
-      await sendNotification(req, `Position Level "${position.name}" Updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(position);
     } else {
       return res.status(404).json({ error: "position not found" });
@@ -584,15 +564,14 @@ export const deletePositionLevel = async (req: Request, res: Response) => {
 
     const positionLevel = await prisma.position_levels.update({
       where: {
-        id
+        id,
       },
       data: {
-        status: 0
-      }
+        is_active: false,
+      },
     });
 
     if (positionLevel) {
-      await sendNotification(req, `Position Level "${positionLevel}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(positionLevel);
     } else {
       return res.status(404).json({ error: "position level not found" });
@@ -609,8 +588,8 @@ export const getPositionLevelById = async (req: Request, res: Response) => {
     const positionLevel = await prisma.position_levels.findUnique({
       where: {
         id: Number(id),
-        status: 1
-      }
+        is_active: true,
+      },
     });
 
     if (positionLevel) {
@@ -626,42 +605,40 @@ export const getPositionLevelById = async (req: Request, res: Response) => {
 // users
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await prisma.users.findMany(
-      {
-        where: {
-          status: 1
-        },
-        select: {
-          user_id: true,
-          first_name: true,
-          last_name: true,
-          username: true,
-          email: true,
-          phone_no: true,
-          role_id: true,
-          roles: {
-            select: {
-              role_name: true
-            }
-          },
-          companies: {
-            select: {
-              name: true
-            }
-          },
-          departments: {
-            select: {
-              name: true
-            }
-          },
-          positions: {
-            select: {
-              name: true
-            }
+    const users = await prisma.users.findMany({
+      where: {
+        is_active: true,
+      },
+      select: {
+        user_id: true,
+        first_name: true,
+        last_name: true,
+        username: true,
+        email: true,
+        phone_no: true,
+        role_id: true,
+        roles: {
+          select: {
+            role_name: true,
           },
         },
-      }
-    )
+        companies: {
+          select: {
+            name: true,
+          },
+        },
+        departments: {
+          select: {
+            name: true,
+          },
+        },
+        positions: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
 
     if (users) {
       res.status(200).json(users);
@@ -691,12 +668,6 @@ export const addUser = async (req: Request, res: Response) => {
       return res.status(400).send("Email already exists");
     }
 
-    const existingUsername = await prisma.users.findUnique({ where: { username: username } });
-
-    if (existingUsername) {
-      return res.status(400).send("Username already exists");
-    }
-
     const salt = bcrypt.genSaltSync();
     const hashedPassword = bcrypt.hashSync(password, salt);
 
@@ -717,12 +688,10 @@ export const addUser = async (req: Request, res: Response) => {
         company_id: companyId,
         dept_id: departmentId,
         position_id: positionId,
-        status: 1
       }
     });
 
     if (user) {
-      await sendNotification(req, `User "${user.username}" added successfully`, NotificationType.add, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(user);
     }
   } catch (error: any) {
@@ -743,12 +712,6 @@ export const updateUser = async (req: Request, res: Response) => {
 
     if (existingEmail) {
       return res.status(400).send("Email already exists");
-    }
-
-    const existingUsername = await prisma.users.findUnique({ where: { username: username } });
-
-    if (existingUsername) {
-      return res.status(400).send("Username already exists");
     }
 
     const user = await prisma.users.update({
@@ -772,7 +735,6 @@ export const updateUser = async (req: Request, res: Response) => {
     });
 
     if (user) {
-      await sendNotification(req, `User "${user.username}" updated successfully`, NotificationType.update, `${process.env.FRONTEND_URL}/configuration`);
       res.status(200).json(user);
     } else {
       return res.status(404).json({ error: "User not found" });
@@ -792,14 +754,13 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     const user = await prisma.users.update({
       where: {
-        user_id: Number(id)
+        user_id: Number(id),
       },
       data: {
-        status: 0
-      }
+        is_active: false,
+      },
     });
 
-    await sendNotification(req, `User "${user.username}" deleted successfully`, NotificationType.delete, `${process.env.FRONTEND_URL}/configuration`);
     res.status(200).json(user);
   } catch (error: any) {
     res.status(500).json({ error: "Failed to delete user" });

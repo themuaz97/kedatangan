@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import prisma from "../db/prisma.js";
 import upload from "../middleware/upload.middleware.js";
 import { bucket } from "../utils/firebase.js";
-import { v4 as uuidv4 } from "uuid";
-import sharp from "sharp";
 
 export const updateMe = async (req: Request, res: Response) => {
   try {

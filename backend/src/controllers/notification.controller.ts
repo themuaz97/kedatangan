@@ -21,8 +21,8 @@ export const getNotifications = async (req: Request, res: Response) => {
 export const markNotificationsAsSeen = async (req: Request, res: Response) => {
   try {
     await prisma.notifications.updateMany({
-      where: { user_id: req.users?.user_id, seen: false },
-      data: { seen: true },
+      where: { user_id: req.users?.user_id, seen_status: false },
+      data: { seen_status: true },
     });
     res.status(200).json({ message: "Notifications marked as seen" });
   } catch (error: any) {
