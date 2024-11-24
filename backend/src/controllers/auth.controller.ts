@@ -4,7 +4,7 @@ import prisma from "../db/prisma.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/token.js";
 import jwt from "jsonwebtoken";
-import { generateRandomUserId, generateUserId } from "../utils/generateUserId.js";
+import { generateUserId } from "../utils/generateUserId.js";
 import { Provider } from "@prisma/client";
 import { transporter } from "../config/emailConfig.js";
 
@@ -40,13 +40,6 @@ export const register = async (req: Request, res: Response) => {
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
-
-    // TODO implement generateUserId()
-    const lastUser = await prisma.users.findFirst({
-      orderBy: {
-        user_id: "desc",
-      },
-    });
 
     const newEmployeeId = await generateUserId();
 
@@ -205,7 +198,7 @@ export const refreshToken = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshJwt;
 
   if (!refreshToken) {
-    return res.status(401).json({ message: "Refresh token not found"});
+    return res.status(404).json({ message: "Refresh token not found"});
   }
 
   try {
@@ -366,10 +359,10 @@ export const redirect = (req: Request, res: Response) => {
       const user = await prisma.users.upsert({
         where: { email: response.account.username },
         update: { 
-          first_name: response.account.name || undefined,
+          first_name: response.account.name,
         },
         create: {
-          user_id: Number(generateRandomUserId()),
+          user_id: Number(generateUserId()),
           email: response.account.username,
           first_name: response.account.name as string,
           username: response.account.username as string,
@@ -382,68 +375,14 @@ export const redirect = (req: Request, res: Response) => {
         }
       });
 
-      await generateToken(user.user_id, res, Provider.microsoft, 'auth');
+      const { accessToken, refreshToken } = await generateToken(user.user_id, res, Provider.microsoft, 'auth');
 
-      res.redirect(`${process.env.FRONTEND_URL}/profile`);
+      res.redirect(`${process.env.FRONTEND_URL}/auth/login?accessToken=${accessToken}&refreshToken=${refreshToken}`);
     } else {
-      res.status(400).json({ message: 'Invalid response from token acquisition'});
+      res.status(401).json({ message: 'Invalid response from token acquisition'});
     }
   }).catch((error) => {
     console.log(error);
     res.status(500).json(error);
   });
-};
-
-export const getMicrosoftUser = async (req: Request, res: Response) => {
-  try {
-    if (!req.user || !req.user.localAccountId) {
-      return res.status(400).send('User information not available');
-    }
-
-    const user = await prisma.auth_methods.findUnique({
-      where: {
-        provider_id: req.user.localAccountId
-      },
-      include: {
-        users: {
-          select: {
-            user_id: true,
-            email: true,
-            first_name: true,
-            last_name: true,
-            username: true,
-            address: true,
-            phone_no: true,
-            gender: true,
-            profile_img: true,
-            role_id: true
-          }
-        }
-      }
-    });
-
-    if (user) {
-      res.status(200).json(user.users);
-    } else {
-      res.status(404).send('User not found in database');
-    }
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).send('Internal server error');
-  }
-};
-
-export const logoutMicrosoft = (req: Request, res: Response) => {
-  // Clear the auth token cookie
-  res.clearCookie("ms_token");
-
-  // Construct the Microsoft logout URL
-  const logoutUri = `https://login.microsoftonline.com/${
-    process.env.TENANT_ID
-  }/oauth2/v2.0/logout?post_logout_redirect_uri=${encodeURIComponent(
-    process.env.BASE_URL as string
-  )}`;
-
-  // Send the logout URL to the client
-  res.json({ logoutUrl: logoutUri });
 };

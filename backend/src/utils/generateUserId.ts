@@ -1,12 +1,5 @@
 import prisma from "../db/prisma.js";
 
-export function generateRandomUserId(length: number = 8): string {
-  return Array.from(
-    { length },
-    () => Math.floor(Math.random() * 10).toString()
-  ).join("");
-}
-
 export const generateUserId = async () => {
   const lastUser = await prisma.users.findFirst({
     orderBy: {
