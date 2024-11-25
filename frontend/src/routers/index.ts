@@ -38,6 +38,11 @@ const routes = [
             next('/'); // Redirect non-admin users to home or another page
           }
         },
+      },
+      {
+        path: '/log',
+        name: 'log',
+        component: () => import('@/views/pages/logs/LogTab.vue'),
       }
     ]
   },

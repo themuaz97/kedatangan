@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import prisma from "../db/prisma.js";
-import internal from "stream";
 import { Provider } from "@prisma/client";
 
 export const registeredUsers = async (req: Request, res: Response) => {

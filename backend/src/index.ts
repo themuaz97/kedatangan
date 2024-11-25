@@ -5,7 +5,6 @@ import { authRouter } from './routers/auth.route.js';
 import cors from 'cors';
 import { indexRouter } from './routers/index.route.js';
 import http from 'http'; // Import http to create server
-import { initSocket } from '../src/utils/socket.js'; // Import your socket initialization
 
 dotenv.config();
 
@@ -18,9 +17,6 @@ app.use(express.json());
 
 app.use('/api/auth', authRouter);
 app.use('/api', indexRouter);
-
-// Initialize socket.io
-initSocket(server);
 
 const PORT = process.env.PORT || 3005;
 

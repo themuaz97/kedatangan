@@ -8,7 +8,6 @@ import PrimeVue from "primevue/config";
 import Aura from '@primevue/themes/aura';
 import Select from 'primevue/select';
 // import Checkbox from 'primevue/checkbox';
-import Card from 'primevue/card';
 import Button from 'primevue/button';
 import Menu from 'primevue/menu';
 import Toast from 'primevue/toast';
@@ -40,20 +39,10 @@ import Modal from './components/Modal.vue'
 import Checkbox from './components/Checkbox.vue'
 import Radio from './components/Radio.vue'
 import Switch from './components/Switch.vue'
-import { setupSocket } from './services/socket.ts'
+import TabComponent from './components/Tab.vue'
+import Card from './components/Card.vue'
 
 const app = createApp(App);
-
-// Setup Socket and handle notifications
-setupSocket((data) => {
-  // Display notification here or use a Toast component
-  app.config.globalProperties.$toast.add({ 
-    severity: 'info', 
-    summary: 'Notification', 
-    detail: data.message, 
-    life: 3000 
-  });
-});
 
 app.use(router);
 app.use(PrimeVue, {
@@ -90,6 +79,7 @@ app.component('Select', Select)
 app.component('Stepper', Stepper)
 app.component('Switch', Switch)
 app.component('Tab', Tab)
+app.component('TabComponent', TabComponent)
 app.component('TabList', TabList)
 app.component('TabPanels', TabPanels)
 app.component('Tabs', Tabs)

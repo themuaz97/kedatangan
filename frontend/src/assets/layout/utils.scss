@@ -1,14 +1,21 @@
 .card {
-  background: #181818;
-  border: 1px solid var(--surface-border);
-  padding: 2rem;
-  box-shadow: 2px 5px 7px rgba(0, 0, 0, 0.02), 2px 5px 7px rgba(0, 0, 0, 0.05), 2px 5px 7px rgba(0, 0, 0, 0.08);
-  // width: 100%;
-  border-radius: $borderRadius;
+  background: #374151; /* Dark gray background */
+  border: 1px solid var(--surface-border); /* Light border color */
+  padding: 1.3rem; /* Internal spacing */
+  transition: transform 0.2s ease-in-out, border 0.2s ease-in-out; /* Smooth transform and border transitions */
+  box-shadow: 
+    2px 5px 7px rgba(0, 0, 0, 0.02), 
+    2px 5px 7px rgba(0, 0, 0, 0.05), 
+    2px 5px 7px rgba(0, 0, 0, 0.08); /* Soft shadows */
+  border-radius: $borderRadius; /* Adjusted border-radius */
+}
 
-  &:last-child {
-      margin-bottom: 0;
-  }
+.card.hover-effect:hover {
+  transform: translateY(6px); /* Slightly lift the card */
+  border: 2px solid #ffffff; /* White border on hover */
+  box-shadow: 
+    4px 8px 10px rgba(0, 0, 0, 0.1), 
+    4px 8px 10px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
 }
 
 /* Tailwind's fade-in / fade-out for the modal backdrop */

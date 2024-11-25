@@ -1,6 +1,6 @@
 import express from 'express';
-import { forgotPassword, getLoggedUser, getMicrosoftUser, login, logout, logoutMicrosoft, microsoftLogin, redirect, register, resetPassword } from '../controllers/auth.controller.js';
-import { protectRoute, protectRouteMicrosoft } from '../middleware/auth.middleware.js';
+import { forgotPassword, getLoggedUser, login, logout, microsoftLogin, redirect, register, resetPassword } from '../controllers/auth.controller.js';
+import { protectRoute } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
@@ -12,9 +12,7 @@ router.post('/logout', logout);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 
-router.get('/me-microsoft', protectRouteMicrosoft, getMicrosoftUser);
 router.get('/microsoft-login', microsoftLogin);
 router.get('/redirect', redirect);
-// router.get('/logout', logoutMicrosoft);
 
 export { router as authRouter };

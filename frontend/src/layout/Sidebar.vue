@@ -3,6 +3,7 @@
     <ul>
       <li><router-link to="/"><span class="pi pi-home mr-2" />Dashboard</router-link></li>
       <li v-if="isAdmin"><router-link to="/configuration"><span class="pi pi-cog mr-2" />Configuration</router-link></li>
+      <li><router-link to="/log"><span class="pi pi-cog mr-2" />Logs</router-link></li>
     </ul>
   </aside>
 </template>

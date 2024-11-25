@@ -2,10 +2,11 @@ import { defineStore } from 'pinia';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null as null | { email: string; username: string; role_id: number }, // Define your user object structure here
+    user: null as null | { email: string; username: string; role_id: number },
+    accessToken: null as string | null, // Store the access token
   }),
   getters: {
-    isAuthenticated: (state) => !!state.user,
+    isAuthenticated: (state) => !!state.accessToken,
     isAdmin: (state) => state.user?.role_id === 1,
   },
   actions: {
@@ -16,15 +17,15 @@ export const useAuthStore = defineStore('auth', {
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
           body: JSON.stringify({ email, password }),
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          this.user = data.user; 
-          // console.log("Logged in user:", this.user);
+          this.user = data.user; // Update the user state
+          this.accessToken = data.accessToken; // Store the access token
+          console.log("Logged in user:", this.user);
           return true;
         } else {
           throw new Error(data.message);
@@ -36,13 +37,24 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async fetchUser(): Promise<void> {
+      if (!this.accessToken) {
+        console.error('No access token available');
+        this.user = null;
+        return;
+      }
+
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
           method: 'GET',
-          credentials: 'include', // Include cookies in the request
+          headers: {
+            'Authorization': `Bearer ${this.accessToken}`, // Include the Bearer token in the header
+          },
         });
 
         if (!response.ok) {
+          if (response.status === 401) {
+            console.error('Unauthorized. Token might be invalid or expired.');
+          }
           throw new Error('Failed to fetch user info');
         }
 

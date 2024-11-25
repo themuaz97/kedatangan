@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../db/prisma.js";
 import bcrypt from "bcrypt";
-import { sendNotification } from "../utils/socket.js";
 
 // roles
 export const getRoles = async (req: Request, res: Response) => {
