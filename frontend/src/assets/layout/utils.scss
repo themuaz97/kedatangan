@@ -11,8 +11,7 @@
 }
 
 .card.hover-effect:hover {
-  transform: translateY(6px); /* Slightly lift the card */
-  border: 2px solid #ffffff; /* White border on hover */
+  transform: translateY(4px); /* Slightly lift the card */
   box-shadow: 
     4px 8px 10px rgba(0, 0, 0, 0.1), 
     4px 8px 10px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */

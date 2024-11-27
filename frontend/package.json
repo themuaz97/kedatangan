@@ -14,12 +14,14 @@
     "@heroicons/vue": "^2.1.5",
     "@primevue/themes": "^4.0.5",
     "axios": "^1.7.4",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "pinia": "^2.2.2",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.5",
     "socket.io-client": "^4.8.0",
     "vue": "^3.4.37",
+    "vue-datepicker-next": "^1.0.3",
     "vue-router": "^4.4.3"
   },
   "devDependencies": {

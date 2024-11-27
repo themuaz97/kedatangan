@@ -7,8 +7,6 @@ import { createPinia } from 'pinia';
 import PrimeVue from "primevue/config";
 import Aura from '@primevue/themes/aura';
 import Select from 'primevue/select';
-// import Checkbox from 'primevue/checkbox';
-import Button from 'primevue/button';
 import Menu from 'primevue/menu';
 import Toast from 'primevue/toast';
 import Password from 'primevue/password'
@@ -16,7 +14,7 @@ import InputText from 'primevue/inputtext'
 import InputGroup from 'primevue/inputgroup'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
-import DatePicker from 'primevue/datepicker'
+// import DatePicker from 'primevue/datepicker'
 import RadioButton from 'primevue/radiobutton'
 import ToggleSwitch from 'primevue/toggleswitch'
 import DataTable from 'primevue/datatable'
@@ -35,12 +33,14 @@ import Column from 'primevue/column'
 import ColumnGroup from 'primevue/columngroup'
 import ConfirmationService from 'primevue/confirmationservice';
 import Row from 'primevue/row'
-import Modal from './components/Modal.vue'
+import TabComponent from './components/Tab.vue'
+import Button from './components/Button.vue'
+import Card from './components/Card.vue'
 import Checkbox from './components/Checkbox.vue'
+import Modal from './components/Modal.vue'
 import Radio from './components/Radio.vue'
 import Switch from './components/Switch.vue'
-import TabComponent from './components/Tab.vue'
-import Card from './components/Card.vue'
+import Datepicker from './components/Datepicker.vue'
 
 const app = createApp(App);
 
@@ -62,7 +62,7 @@ app.component('ColumnGroup', ColumnGroup)
 app.component('ConfirmDialog', ConfirmDialog)
 app.component('ConfirmPopup', ConfirmPopup)
 app.component('DataTable', DataTable)
-app.component('DatePicker', DatePicker)
+app.component('DatePicker', Datepicker)
 app.component('Dialog', Dialog)
 app.component('Divider', Divider)
 app.component('InputGroup', InputGroup)

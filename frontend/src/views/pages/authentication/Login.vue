@@ -45,7 +45,7 @@ onMounted(() => {
 
 <template>
   <div class="w-full max-w-xs">
-    <form class="w-full p-6 mb-4 rounded-lg shadow dark:border md:mt-0 sm:max-w-md bg-gray-800 dark:border-gray-700 sm:p-8" @submit.prevent="handleSubmit">
+    <form class="w-full p-6 mb-4 rounded-lg shadow dark:border md:mt-0 sm:max-w-md backdrop-filter backdrop-blur-md bg-gray-800 dark:border-gray-700 sm:p-8" @submit.prevent="handleSubmit">
       <div class="mb-4">
         <label
           class="block text-white text-sm font-bold mb-2"
@@ -86,7 +86,7 @@ onMounted(() => {
       </div>
       <div class="flex flex-col justify-center">
         <button
-          class="bg-purple-500 hover:bg-purple-700 focus:ring-purple-500 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          class="bg-purple-600 hover:bg-purple-700 focus:ring-purple-600 font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline transition"
           type="submit"
         >
           Sign In
@@ -109,14 +109,14 @@ onMounted(() => {
 
     <div class="flex justify-center">
       <button
-          class="bg-gray-800 hover:bg-purple-500 focus:ring-purple-500 text-white font-bold py-2 px-4 rounded"
+          class="bg-gray-800 hover:bg-purple-600 focus:ring-purple-600 text-white font-bold py-2 px-4 rounded"
           @click="loginMicrosoft"
           v-tooltip.bottom="'Microsoft'"
         >
         <i class="pi pi-microsoft" style="font-size: 2rem"></i>
       </button>
       <button
-          class="bg-gray-800 hover:bg-purple-500 focus:ring-purple-500 text-white font-bold py-2 px-4 rounded"
+          class="bg-gray-800 hover:bg-purple-600 focus:ring-purple-600 text-white font-bold py-2 px-4 rounded"
           @click="loginGoogle"
           v-tooltip.bottom="'Google'"
         >
