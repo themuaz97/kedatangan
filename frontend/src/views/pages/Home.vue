@@ -10,8 +10,8 @@
     <Radio>test</Radio>
     <div class="p-4">
     <h1 class="mb-4 text-xl font-bold">Reusable Datepicker Example</h1>
-    <Datepicker v-model="selectedDate" placeholder="Pick a date" />
-    <p class="mt-4">{{ selectedDate }}</p>
+    <Datepicker v-model="selectedDate" selectionMode="range" placeholder="Pick a date" />
+    <!-- <p class="mt-4">{{ selectedDate }}</p> -->
   </div>
   </div>
   </div>

@@ -1,3 +1,4 @@
+<!-- TODO nested dropdown sidebar, refer primevue docs. sidebar -> components -> nested link of each components -->
 <template>
   <aside :class="['sidebar', { 'sidebar-open': isOpen }]">
     <ul>

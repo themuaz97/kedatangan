@@ -1,9 +1,11 @@
 <template>
-  <!-- TODO click outside dropdown, input, can input date, date range  -->
   <div class="relative w-full" ref="datepickerWrapper">
     <input
       type="text"
-      class="w-full min-w-[280px] max-w-[480px] px-4 py-2 border bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:border-purple-600 text-ellipsis overflow-hidden whitespace-nowrap"
+      :class="[
+        'px-4 py-2 border bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:border-purple-600 text-ellipsis overflow-hidden whitespace-nowrap',
+        inputWidthClass
+      ]"
       :placeholder="placeholder"
       v-model="formattedDate"
       @focus="toggleDatepicker"
@@ -51,7 +53,8 @@
           :class="[ 
             'p-2 text-sm cursor-pointer rounded',
             day.isCurrentMonth ? 'text-white' : 'text-gray-400 hover:text-white',
-            day.isSelected ? 'bg-purple-600 text-white' : 'hover:bg-purple-400'
+            day.isSelected ? 'bg-purple-600 text-white' : '',
+            day.isInRange ? 'bg-purple-600 text-white' : 'hover:bg-purple-500'
           ]"
           @click="selectDate(day.date)"
         >
@@ -65,24 +68,47 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 
-// Props
+// TODO :add icon, icon positions. Props
 interface Props {
-  modelValue: Date | null;
+  modelValue: Date | { start: Date | null; end: Date | null } | null;
   placeholder?: string;
+  selectionMode?: 'single' | 'range';
+  icon?: string; // The icon class name (e.g., from FontAwesome, Material Icons, etc.)
+  iconPosition?: 'start' | 'end';
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:modelValue']);
 
 // State
 const isOpen = ref(false);
-const selectedDate = ref<Date | null>(props.modelValue || null);
+const startDate = ref<Date | null>(null);
+const endDate = ref<Date | null>(null);
+const selectedDate = ref<Date | null>(null);
+const datepickerWrapper = ref<HTMLDivElement | null>(null);
+
+// Default mode
+const mode = computed(() => props.selectionMode || 'single');
+
+// Dynamically adjust input width
+const inputWidthClass = computed(() =>
+  mode.value === 'range'
+    ? 'min-w-[310px] max-w-[600px]'
+    : 'min-w-[280px] max-w-[480px]'
+);
 
 // Computed properties
-const formattedDate = computed(() =>
-  selectedDate.value
-    ? selectedDate.value.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-    : ''
-);
+const formattedDate = computed(() => {
+  if (mode.value === 'range') {
+    if (startDate.value && endDate.value) {
+      return `${startDate.value.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} - ${endDate.value.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+    } else if (startDate.value) {
+      return `${startDate.value.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+    }
+  } else if (mode.value === 'single' && selectedDate.value) {
+    return selectedDate.value.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  return '';
+});
 
 // Calendar logic
 const today = new Date();
@@ -100,20 +126,29 @@ const daysInMonth = computed(() => {
 
   const days = [];
   for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
-    // Add previous month's trailing days
     days.push({
       date: new Date(currentYear.value, currentMonth.value - 1, -i),
       isCurrentMonth: false,
       isSelected: false,
+      isInRange: false,
     });
   }
 
   for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
     const date = new Date(currentYear.value, currentMonth.value, i);
+    const isInRange =
+      startDate.value &&
+      endDate.value &&
+      date >= startDate.value &&
+      date <= endDate.value;
+
     days.push({
       date,
       isCurrentMonth: true,
-      isSelected: selectedDate.value?.toDateString() === date.toDateString(),
+      isSelected: mode.value === 'range'
+        ? date.toDateString() === startDate.value?.toDateString() || date.toDateString() === endDate.value?.toDateString()
+        : date.toDateString() === selectedDate.value?.toDateString(),
+      isInRange,
     });
   }
 
@@ -126,9 +161,22 @@ function toggleDatepicker() {
 }
 
 function selectDate(date: Date) {
-  selectedDate.value = date;
-  emit('update:modelValue', date);
-  isOpen.value = false;
+  if (mode.value === 'single') {
+    selectedDate.value = date;
+    emit('update:modelValue', date);
+    isOpen.value = false;
+  } else if (mode.value === 'range') {
+    if (!startDate.value || (startDate.value && endDate.value)) {
+      startDate.value = date;
+      endDate.value = null;
+    } else if (date < startDate.value) {
+      startDate.value = date;
+    } else {
+      endDate.value = date;
+      emit('update:modelValue', { start: startDate.value, end: endDate.value });
+      isOpen.value = false;
+    }
+  }
 }
 
 function changeMonth(offset: number) {
@@ -144,9 +192,7 @@ function changeMonth(offset: number) {
 
 // Close datepicker when clicking outside
 function handleClickOutside(event: MouseEvent) {
-  const wrapper = document.querySelector('.datepicker-wrapper') as HTMLElement;
-  const datepicker = document.querySelector('.datepicker-dropdown') as HTMLElement;
-
+  const wrapper = datepickerWrapper.value as HTMLElement;
   if (wrapper && !wrapper.contains(event.target as Node)) {
     isOpen.value = false;
   }
@@ -156,7 +202,12 @@ function handleClickOutside(event: MouseEvent) {
 watch(
   () => props.modelValue,
   (newVal) => {
-    selectedDate.value = newVal;
+    if (mode.value === 'single') {
+      selectedDate.value = newVal as Date | null;
+    } else if (mode.value === 'range') {
+      startDate.value = (newVal as { start: Date | null; end: Date | null })?.start || null;
+      endDate.value = (newVal as { start: Date | null; end: Date | null })?.end || null;
+    }
   }
 );
 
@@ -171,8 +222,4 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Add class to identify datepicker wrapper for outside click */
-.datepicker-wrapper {
-  position: relative;
-}
 </style>
