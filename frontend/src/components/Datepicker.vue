@@ -1,16 +1,32 @@
 <template>
   <div class="relative w-full" ref="datepickerWrapper">
-    <input
-      type="text"
-      :class="[
-        'px-4 py-2 border bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:border-purple-600 text-ellipsis overflow-hidden whitespace-nowrap',
-        inputWidthClass
-      ]"
-      :placeholder="placeholder"
-      v-model="formattedDate"
-      @focus="toggleDatepicker"
-      readonly
-    />
+    <div class="flex items-center relative">
+      <!-- Icon (conditionally rendered) -->
+      <span
+        v-if="icon"
+        :class="[
+          'absolute text-gray-400 cursor-pointer',
+          iconPosition === 'start' ? 'left-3' : 'right-3',
+        ]"
+        @click="toggleDatepicker"
+      >
+        <i :class="icon"></i>
+      </span>
+
+      <!-- Input field -->
+      <input
+        type="text"
+        :class="[ 
+          'px-4 py-2 border bg-gray-700 rounded-lg shadow-sm focus:outline-none focus:border-purple-600 text-ellipsis overflow-hidden whitespace-nowrap',
+          inputPaddingClass,
+          inputWidthClass
+        ]"
+        :placeholder="placeholder"
+        v-model="formattedDate"
+        @focus="toggleDatepicker"
+        readonly
+      />
+    </div>
 
     <!-- Datepicker dropdown -->
     <div
@@ -68,7 +84,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 
-// TODO :add icon, icon positions. Props
+// Props
 interface Props {
   modelValue: Date | { start: Date | null; end: Date | null } | null;
   placeholder?: string;
@@ -88,6 +104,12 @@ const datepickerWrapper = ref<HTMLDivElement | null>(null);
 
 // Default mode
 const mode = computed(() => props.selectionMode || 'single');
+
+// Dynamically adjust input padding based on icon position
+const inputPaddingClass = computed(() => {
+  if (!props.icon) return '';
+  return props.iconPosition === 'start' ? 'pl-10 pr-4' : 'pl-4 pr-10';
+});
 
 // Dynamically adjust input width
 const inputWidthClass = computed(() =>

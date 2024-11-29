@@ -15,6 +15,7 @@
 .sidebar-open {
   left: 0; /* Slide in to view */
   transform: translateX(0);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar ul {
@@ -28,11 +29,11 @@
   padding: 10px;
   border-radius: 10px; /* Explicitly set border-radius here */
   transition: background-color 0.3s, color 0.3s;
+  margin: 0.5rem 0;
 }
 
 .sidebar li:hover {
   background-color: #6b21a8;
-  color: #ffffff;
 }
 
 .sidebar ul li a {
@@ -44,4 +45,15 @@
 .sidebar ul li a:hover {
   color: inherit;
   display: block;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nested-menu {
+  margin-left: 1rem;
+  list-style-type: none;
 }

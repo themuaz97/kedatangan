@@ -43,6 +43,17 @@ const routes = [
         path: '/log',
         name: 'log',
         component: () => import('@/views/pages/logs/LogTab.vue'),
+      },
+      {
+        path: '/components',
+        name: 'components',
+        children: [
+          {
+            path: 'button',
+            name: 'button',
+            component: () => import('@/documentation/Button.vue')
+          }
+        ]
       }
     ]
   },
