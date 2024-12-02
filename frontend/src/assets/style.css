@@ -3,8 +3,13 @@
 @import "./layout/sidebar.css";
 @import "./layout/footer.css";
 @import "./layout/layout.css";
-
+@import "./documentation/main.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --mark-background: #c084fc; 
+  --mark-text: #000000; 
+}

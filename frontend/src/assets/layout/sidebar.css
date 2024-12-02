@@ -1,3 +1,4 @@
+/* General Sidebar Styling */
 .sidebar {
   width: 300px;
   background-color: #1f2937;
@@ -27,33 +28,42 @@
 .sidebar li {
   width: 100%;
   padding: 10px;
-  border-radius: 10px; /* Explicitly set border-radius here */
+  border-radius: 10px;
   transition: background-color 0.3s, color 0.3s;
   margin: 0.5rem 0;
 }
 
-.sidebar li:hover {
-  background-color: #6b21a8;
+/* Apply hover only to li without nested ul */
+.sidebar li:not(:has(ul)):hover {
+  background-color: #6b21a8; /* Highlight only non-parent items */
 }
 
+/* Child menu items hover effect */
+.sidebar ul.nested-menu li:hover {
+  background-color: #6b21a8; /* Highlight child elements on hover */
+}
+
+/* Nested menu spacing */
+.nested-menu {
+  margin-left: 1rem;
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Links styling */
 .sidebar ul li a {
   text-decoration: none;
-  color: inherit; /* Inherit color from parent */
+  color: inherit;
   display: block; /* Make link occupy the full list item area */
 }
 
 .sidebar ul li a:hover {
   color: inherit;
-  display: block;
 }
 
+/* Header styling for parent menu */
 .menu-header {
   display: flex;
   align-items: center;
   cursor: pointer;
-}
-
-.nested-menu {
-  margin-left: 1rem;
-  list-style-type: none;
 }

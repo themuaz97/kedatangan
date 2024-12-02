@@ -1,0 +1,37 @@
+.doc-card-sample {
+  background-color: #dddfe0; /* Dark background color */
+  border-radius: 8px; /* Optional: Rounded corners */
+  padding: 16px; /* Optional: Padding for content inside */
+  border: 2px solid #1f2937;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Subtle shadow for elevation */
+  margin-bottom: 10px;
+}
+
+.doc-card {
+  background-color: #1f2937; /* Dark background color */
+  border-radius: 8px; /* Optional: Rounded corners */
+  padding: 16px; /* Optional: Padding for content inside */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Subtle shadow for elevation */
+  margin-bottom: 10px;
+}
+
+/* Code Block Styles Inside Card */
+.doc-card code {
+  display: block;
+  background-color: #1f2937; /* Slightly darker shade for code background */
+  padding: 8px 12px; /* Padding for the code block */
+  border-radius: 6px; 
+  font-family: 'Courier New', monospace; /* Monospace font for code */
+  font-size: 0.9rem; /* Slightly smaller font size */
+  overflow-x: auto; /* Horizontal scroll if code is too wide */
+}
+
+.doc-section-description>p i {
+  background: var(--mark-background);
+  border-radius: 6px;
+  color: var(--mark-text);
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 500;
+  padding: 2px 6px;
+}

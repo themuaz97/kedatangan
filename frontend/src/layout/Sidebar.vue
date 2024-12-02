@@ -17,7 +17,7 @@
         </router-link>
       </li>
       <!-- Dropdown for nested menu -->
-       <!-- TODO if have sidebar parent, parent shouldn't be hovered only child -->
+       <!-- TODO when select one of the li, the bg will be changed to show the current page for the li -->
       <li>
         <div class="menu-header" @click="toggleComponentsMenu">
           <span class="pi pi-compass mr-2" />Components

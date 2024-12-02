@@ -7,7 +7,7 @@
   >
     <!-- Header -->
     <div v-if="title || subtitle">
-      <h3 v-if="title" class="text-lg font-semibold">{{ title }}</h3>
+      <h3 v-if="title" class="text-xl font-semibold">{{ title }}</h3>
       <p v-if="subtitle" class="text-sm mt-1">{{ subtitle }}</p>
     </div>
 
