@@ -1,5 +1,5 @@
 .doc-card-sample {
-  background-color: #dddfe0; /* Dark background color */
+  background-color: #1f2937; /* Dark background color */
   border-radius: 8px; /* Optional: Rounded corners */
   padding: 16px; /* Optional: Padding for content inside */
   border: 2px solid #1f2937;
@@ -8,7 +8,7 @@
 }
 
 .doc-card {
-  background-color: #1f2937; /* Dark background color */
+  background-color: #000000; /* Dark background color */
   border-radius: 8px; /* Optional: Rounded corners */
   padding: 16px; /* Optional: Padding for content inside */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Subtle shadow for elevation */
@@ -18,7 +18,7 @@
 /* Code Block Styles Inside Card */
 .doc-card code {
   display: block;
-  background-color: #1f2937; /* Slightly darker shade for code background */
+  background-color: #000000; /* Slightly darker shade for code background */
   padding: 8px 12px; /* Padding for the code block */
   border-radius: 6px; 
   font-family: 'Courier New', monospace; /* Monospace font for code */

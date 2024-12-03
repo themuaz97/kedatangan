@@ -52,8 +52,14 @@ const routes = [
             path: 'button',
             name: 'button',
             component: () => import('@/documentation/Button.vue')
-          }
-        ]
+          },
+          {
+            path: 'checkbox',
+            name: 'checkbox',
+            component: () => import('@/documentation/Checkbox.vue')
+          },
+        ],
+        
       }
     ]
   },

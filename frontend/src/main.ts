@@ -37,6 +37,7 @@ import TabComponent from './components/Tab.vue'
 import Button from './components/Button.vue'
 import Card from './components/Card.vue'
 import Checkbox from './components/Checkbox.vue'
+import Clock from './components/Clock.vue'
 import Modal from './components/Modal.vue'
 import Radio from './components/Radio.vue'
 import Switch from './components/Switch.vue'
@@ -57,6 +58,7 @@ app.use(createPinia());
 app.component('Button', Button)
 app.component('Card', Card)
 app.component('Checkbox', Checkbox)
+app.component('Clock', Clock)
 app.component('Column', Column)
 app.component('ColumnGroup', ColumnGroup)
 app.component('ConfirmDialog', ConfirmDialog)
@@ -75,7 +77,7 @@ app.component('Popover', Popover)
 app.component('RadioButton', RadioButton)
 app.component('Radio', Radio)
 app.component('Row', Row)
-app.component('Select', Select)
+// app.component('Select', Select)
 app.component('Stepper', Stepper)
 app.component('Switch', Switch)
 app.component('Tab', Tab)

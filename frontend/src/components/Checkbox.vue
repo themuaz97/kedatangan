@@ -1,3 +1,4 @@
+<!-- TODO size, group -->
 <template>
   <label
     class="inline-flex items-center space-x-2"

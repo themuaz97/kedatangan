@@ -1,3 +1,4 @@
+<!-- TODO hourFormat, monthpicker, yearpicker -->
 <template>
   <div class="relative w-full" ref="datepickerWrapper">
     <div class="flex items-center relative">
@@ -33,48 +34,169 @@
       v-if="isOpen"
       class="datepicker-dropdown absolute z-10 w-full min-w-[280px] max-w-[480px] p-4 mt-2 bg-gray-700 border rounded-lg shadow-lg"
     >
-      <!-- Month navigation -->
-      <div class="flex justify-between items-center mb-4">
-        <button
-          class="text-white hover:text-purple-400"
-          @click="changeMonth(-1)"
-        >
-          &lt;
-        </button>
-        <span class="text-white font-medium">
-          {{ months[currentMonth] }} {{ currentYear }}
-        </span>
-        <button
-          class="text-white hover:text-purple-400"
-          @click="changeMonth(1)"
-        >
-          &gt;
-        </button>
+      <!-- Render Time Picker Only -->
+      <div v-if="props.timeOnly" class="time-picker">
+        <div class="flex items-center justify-center space-x-4">
+          <!-- Hours -->
+          <div class="flex flex-col items-center">
+            <button
+              class="text-gray-400 hover:text-white"
+              @click="incrementTime('hours')"
+            >
+              <i class="pi pi-angle-up" />
+            </button>
+            <span class="font-medium text-lg">{{ formatNumber(hours) }}</span>
+            <button
+              class="text-gray-400 hover:text-white"
+              @click="decrementTime('hours')"
+            >
+              <i class="pi pi-angle-down" />
+            </button>
+          </div>
+          <div>:</div>
+
+          <!-- Minutes -->
+          <div class="flex flex-col items-center">
+            <button
+              class="text-gray-400 hover:text-white"
+              @click="incrementTime('minutes')"
+            >
+              <i class="pi pi-angle-up" />
+            </button>
+            <span class="font-medium text-lg">{{ formatNumber(minutes) }}</span>
+            <button
+              class="text-gray-400 hover:text-white"
+              @click="decrementTime('minutes')"
+            >
+              <i class="pi pi-angle-down" />
+            </button>
+          </div>
+          <div>:</div>
+
+          <!-- am/pm -->
+          <div class="flex flex-col items-center">
+            <button
+              class="text-gray-400 hover:text-white"
+              @click="toggleAmPm"
+            >
+              <i class="pi pi-angle-up" />
+            </button>
+            <span class="font-medium text-lg">{{ amPm }}</span>
+            <button
+              class="text-gray-400 hover:text-white"
+              @click="toggleAmPm"
+            >
+              <i class="pi pi-angle-down" />
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- Days of the week -->
-      <div class="grid grid-cols-7 gap-2 text-center">
-        <div
-          v-for="(day, index) in daysOfWeek"
-          :key="'day-' + index"
-          class="font-medium text-gray-400"
-        >
-          {{ day }}
+      <!-- Full Date Picker -->
+      <div v-else>
+        <!-- Month navigation -->
+        <div class="flex justify-between items-center mb-4">
+          <button
+            class="text-white hover:text-purple-400"
+            @click="changeMonth(-1)"
+          >
+            &lt;
+          </button>
+          <span class="text-white font-medium">
+            {{ months[currentMonth] }} {{ currentYear }}
+          </span>
+          <button
+            class="text-white hover:text-purple-400"
+            @click="changeMonth(1)"
+          >
+            &gt;
+          </button>
         </div>
 
-        <!-- Days -->
-        <div
-          v-for="(day, index) in daysInMonth"
-          :key="'day-' + index"
-          :class="[ 
-            'p-2 text-sm cursor-pointer rounded',
-            day.isCurrentMonth ? 'text-white' : 'text-gray-400 hover:text-white',
-            day.isSelected ? 'bg-purple-600 text-white' : '',
-            day.isInRange ? 'bg-purple-600 text-white' : 'hover:bg-purple-500'
-          ]"
-          @click="selectDate(day.date)"
-        >
-          {{ day.date.getDate() }}
+        <!-- Days of the week -->
+        <div class="grid grid-cols-7 gap-2 text-center">
+          <div
+            v-for="(day, index) in daysOfWeek"
+            :key="'day-' + index"
+            class="font-medium text-gray-400"
+          >
+            {{ day }}
+          </div>
+
+          <!-- Days -->
+          <div
+            v-for="(day, index) in daysInMonth"
+            :key="'day-' + index"
+            :class="[ 
+              'py-2 text-sm cursor-pointer rounded',
+              day.isCurrentMonth ? 'text-white' : 'text-gray-400 hover:text-white',
+              day.isSelected ? 'bg-purple-600 text-white' : '',
+              day.isInRange ? 'bg-purple-600 text-white' : 'hover:bg-purple-500',
+              day.isToday ? 'bg-purple-300 font-bold' : ''
+            ]"
+            @click="selectDate(day.date)"
+          >
+            {{ day.date.getDate() }}
+          </div>
+        </div>
+
+        <!-- Time Picker -->
+        <div v-if="props.showTime && !props.timeOnly" class="time-picker mt-4">
+          <hr>
+          <div class="flex items-center justify-center space-x-4 mt-2">
+            <!-- Hours -->
+            <div class="flex flex-col items-center">
+              <button
+                class="text-gray-400 hover:text-white"
+                @click="incrementTime('hours')"
+              >
+                <i class="pi pi-angle-up" />
+              </button>
+              <span class="font-medium text-lg">{{ formatNumber(hours) }}</span>
+              <button
+                class="text-gray-400 hover:text-white"
+                @click="decrementTime('hours')"
+              >
+                <i class="pi pi-angle-down" />
+              </button>
+            </div>
+            <div>:</div>
+
+            <!-- Minutes -->
+            <div class="flex flex-col items-center">
+              <button
+                class="text-gray-400 hover:text-white"
+                @click="incrementTime('minutes')"
+              >
+                <i class="pi pi-angle-up" />
+              </button>
+              <span class="font-medium text-lg">{{ formatNumber(minutes) }}</span>
+              <button
+                class="text-gray-400 hover:text-white"
+                @click="decrementTime('minutes')"
+              >
+                <i class="pi pi-angle-down" />
+              </button>
+            </div>
+            <div>:</div>
+
+            <!-- am/pm -->
+            <div class="flex flex-col items-center">
+              <button
+                class="text-gray-400 hover:text-white"
+                @click="toggleAmPm"
+              >
+                <i class="pi pi-angle-up" />
+              </button>
+              <span class="font-medium text-lg">{{ amPm }}</span>
+              <button
+                class="text-gray-400 hover:text-white"
+                @click="toggleAmPm"
+              >
+                <i class="pi pi-angle-down" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -91,6 +213,9 @@ interface Props {
   selectionMode?: 'single' | 'range';
   icon?: string; // The icon class name (e.g., from FontAwesome, Material Icons, etc.)
   iconPosition?: 'start' | 'end';
+  showTime?: boolean; // enable/disable time picker
+  hourFormat?: 12 | 24; // time format (default: 12-hour)
+  timeOnly?: boolean; // show only time picker
 }
 const props = defineProps<Props>();
 const emit = defineEmits(['update:modelValue']);
@@ -101,9 +226,59 @@ const startDate = ref<Date | null>(null);
 const endDate = ref<Date | null>(null);
 const selectedDate = ref<Date | null>(null);
 const datepickerWrapper = ref<HTMLDivElement | null>(null);
+const hours = ref(12);
+const minutes = ref(0);
+const amPm = ref('am');
 
 // Default mode
 const mode = computed(() => props.selectionMode || 'single');
+
+// Time formatting
+function formatNumber(num: number) {
+  return num.toString().padStart(2, '0');
+}
+
+// Increment and decrement time
+function incrementTime(type: 'hours' | 'minutes') {
+  if (type === 'hours') {
+    hours.value = hours.value === 12 ? 1 : hours.value + 1;
+  } else if (type === 'minutes') {
+    minutes.value = (minutes.value + 1) % 60;
+  }
+}
+
+function decrementTime(type: 'hours' | 'minutes') {
+  if (type === 'hours') {
+    hours.value = hours.value === 1 ? 12 : hours.value - 1;
+  } else if (type === 'minutes') {
+    minutes.value = (minutes.value - 1 + 60) % 60;
+  }
+}
+
+function toggleAmPm() {
+  amPm.value = amPm.value === 'am' ? 'pm' : 'am';
+}
+
+// Time selection logic
+function updateTime() {
+  if (selectedDate.value) {
+    const hours24 = amPm.value === 'am' ? hours.value % 12 : (hours.value % 12) + 12;
+    selectedDate.value.setHours(hours24, minutes.value);
+    emit('update:modelValue', selectedDate.value);
+  }
+}
+
+// Hook into date selection to include time
+watch(
+  () => selectedDate.value,
+  (newDate) => {
+    if (newDate && props.showTime) {
+      hours.value = newDate.getHours() % 12 || 12;
+      minutes.value = newDate.getMinutes();
+      amPm.value = newDate.getHours() >= 12 ? 'pm' : 'am';
+    }
+  }
+);
 
 // Dynamically adjust input padding based on icon position
 const inputPaddingClass = computed(() => {
@@ -114,12 +289,17 @@ const inputPaddingClass = computed(() => {
 // Dynamically adjust input width
 const inputWidthClass = computed(() =>
   mode.value === 'range'
-    ? 'min-w-[310px] max-w-[600px]'
+    ? 'min-w-[340px] max-w-[600px]'
     : 'min-w-[280px] max-w-[480px]'
 );
 
-// Computed properties
 const formattedDate = computed(() => {
+  if (props.timeOnly) {
+    // If timeOnly mode is enabled, format and return only the time
+    const timeStr = `${formatNumber(hours.value)}:${formatNumber(minutes.value)} ${amPm.value}`;
+    return timeStr;
+  }
+
   if (mode.value === 'range') {
     if (startDate.value && endDate.value) {
       return `${startDate.value.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} - ${endDate.value.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`;
@@ -127,8 +307,15 @@ const formattedDate = computed(() => {
       return `${startDate.value.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`;
     }
   } else if (mode.value === 'single' && selectedDate.value) {
-    return selectedDate.value.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    let dateStr = selectedDate.value.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    
+    if (props.showTime) {
+      const timeStr = `${formatNumber(hours.value)}:${formatNumber(minutes.value)} ${amPm.value}`;
+      dateStr = `${dateStr} ${timeStr}`;
+    }
+    return dateStr;
   }
+
   return '';
 });
 
@@ -140,7 +327,10 @@ const months = [
   'January', 'February', 'March', 'April', 'May', 'June', 
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
+
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+today.setHours(0, 0, 0, 0); // Normalize today's date for comparison
 
 const daysInMonth = computed(() => {
   const firstDayOfMonth = new Date(currentYear.value, currentMonth.value, 1);
@@ -153,6 +343,7 @@ const daysInMonth = computed(() => {
       isCurrentMonth: false,
       isSelected: false,
       isInRange: false,
+      isToday: false,
     });
   }
 
@@ -171,6 +362,7 @@ const daysInMonth = computed(() => {
         ? date.toDateString() === startDate.value?.toDateString() || date.toDateString() === endDate.value?.toDateString()
         : date.toDateString() === selectedDate.value?.toDateString(),
       isInRange,
+      isToday: date.getTime() === today.getTime(),
     });
   }
 
@@ -185,8 +377,12 @@ function toggleDatepicker() {
 function selectDate(date: Date) {
   if (mode.value === 'single') {
     selectedDate.value = date;
-    emit('update:modelValue', date);
-    isOpen.value = false;
+    if (props.showTime) {
+      // Update the selected time
+      updateTime();
+    }
+    emit('update:modelValue', selectedDate.value);
+    // isOpen.value = false;
   } else if (mode.value === 'range') {
     if (!startDate.value || (startDate.value && endDate.value)) {
       startDate.value = date;
@@ -195,6 +391,10 @@ function selectDate(date: Date) {
       startDate.value = date;
     } else {
       endDate.value = date;
+      if (props.showTime) {
+        // Update the time for range end
+        updateTime();
+      }
       emit('update:modelValue', { start: startDate.value, end: endDate.value });
       isOpen.value = false;
     }

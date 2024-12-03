@@ -12,6 +12,7 @@ declare module 'vue' {
     Checkbox: typeof import('./src/components/Checkbox.vue')['default']
     Clock: typeof import('./src/components/Clock.vue')['default']
     ConfirmPopup: typeof import('primevue/confirmpopup')['default']
+    Datatable: typeof import('./src/components/Datatable.vue')['default']
     Datepicker: typeof import('./src/components/Datepicker.vue')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
     Divider: typeof import('primevue/divider')['default']
