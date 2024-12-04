@@ -19,6 +19,7 @@
     "pinia": "^2.2.2",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.5",
+    "prismjs": "^1.29.0",
     "socket.io-client": "^4.8.0",
     "vue": "^3.4.37",
     "vue-datepicker-next": "^1.0.3",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@primevue/auto-import-resolver": "^4.0.5",
     "@types/node": "^22.5.0",
+    "@types/prismjs": "^1.26.5",
     "@vitejs/plugin-vue": "^5.1.2",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.41",

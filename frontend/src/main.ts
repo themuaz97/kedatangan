@@ -42,6 +42,7 @@ import Modal from './components/Modal.vue'
 import Radio from './components/Radio.vue'
 import Switch from './components/Switch.vue'
 import Datepicker from './components/Datepicker.vue'
+import CodeBlock from './components/CodeBlock.vue'
 
 const app = createApp(App);
 
@@ -59,6 +60,7 @@ app.component('Button', Button)
 app.component('Card', Card)
 app.component('Checkbox', Checkbox)
 app.component('Clock', Clock)
+app.component('CodeBlock', CodeBlock)
 app.component('Column', Column)
 app.component('ColumnGroup', ColumnGroup)
 app.component('ConfirmDialog', ConfirmDialog)

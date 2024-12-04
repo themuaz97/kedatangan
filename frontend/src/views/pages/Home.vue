@@ -6,23 +6,36 @@
     </div>
     <div>
     <Checkbox v-model="isChecked" label="Accept Terms and Conditions" />
-    <p v-if="isChecked">You have accepted the terms.</p>
-    <Radio>test</Radio>
+    <p class="mt-4">Accepted: {{ isChecked }}</p>
+    <Radio label="test" name="test" value="test" />
     <div class="p-4">
     <h1 class="mb-4 text-xl font-bold">Reusable Datepicker Example</h1>
-    <Datepicker v-model="selectedDate" icon="pi pi-calendar" placeholder="Pick a date" showTime />
-    <!-- <p class="mt-4">{{ selectedDate }}</p> -->
+    <Datepicker v-model="selectedDate" icon="pi pi-calendar" selectionMode="single" placeholder="Pick a date" />
   </div>
   </div>
-  <div class="w-72">
-    <Clock />
+  <div class="card flex flex-wrap justify-center gap-4">
+    <div class="flex items-center gap-2">
+      <Checkbox v-model="pizza" value="Cheese" label="Cheese" />
+    </div>
+    <div class="flex items-center gap-2">
+      <Checkbox v-model="pizza" value="Mushroom" label="Mushroom" />
+    </div>
+    <div class="flex items-center gap-2">
+      <Checkbox v-model="pizza" value="Pepper" label="Pepper" />
+    </div>
+    <div class="flex items-center gap-2">
+      <Checkbox v-model="pizza" value="Onion" label="Onion" />
+    </div>
   </div>
+
+  <p class="mt-4">Selected Ingredients: {{ pizza }}</p>
   </div>
 </template>
 <script setup lang="ts">
 import DatePicker from 'primevue/datepicker';
 import { ref } from 'vue';
 
+const pizza = ref<string[]>([]);
 const isChecked = ref(false);
 const selectedDate = ref<Date | null>(null);
 </script>

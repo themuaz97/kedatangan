@@ -1,5 +1,5 @@
 <template>
-  <label
+  <div
     class="inline-flex items-center space-x-2"
     :class="{ 'opacity-50 cursor-default': disabled }"
   >
@@ -7,55 +7,71 @@
       <input
         type="radio"
         :name="name"
+        :id="inputId"
         :value="value"
-        :checked="internalChecked"
+        :checked="modelValue === value"
         @change="updateValue"
-        class="appearance-none w-5 h-5 rounded-full border-2 border-gray-300 checked:border-purple-600 checked:bg-purple-600 focus:outline-none transition-colors duration-300 ease-linear cursor-pointer"
-        :class="{ 'opacity-50 cursor-default': disabled, 'border-red-500': invalid }"
+        class="appearance-none rounded-full border-2 border-gray-300 checked:border-purple-600 checked:bg-purple-600 focus:outline-none transition-colors duration-300 ease-linear cursor-pointer"
+        :class="[sizeClass, { 'opacity-50 cursor-default': disabled, 'border-red-500': invalid }]"
         :disabled="disabled"
         :aria-invalid="invalid"
       />
       
       <!-- Custom radio button dot, visible when selected -->
       <span
-        v-if="internalChecked"
-        class="absolute inset-1 flex items-center justify-center bg-purple-600 rounded-full w-3 h-3 transition-opacity duration-300 ease-in-out"
+        v-if="modelValue === value"
+        class="absolute bg-purple-600 rounded-full transition-opacity duration-300 ease-in-out"
+        :class="dotSizeClass"
       ></span>
     </div>
-    <span class="ml-2">{{ label }}</span>
-  </label>
+    <!-- Label -->
+    <span :for="inputId">{{ label }}</span>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, watch } from 'vue';
+import { defineProps, defineEmits, computed } from 'vue';
 
 const props = defineProps<{
-  modelValue?: boolean;
-  label: string;
-  value: string | number; // The value passed to the radio group
-  name: string;           // The name attribute of the radio button group
-  disabled?: boolean;
-  invalid?: boolean;
+  modelValue: string | number | null; // Selected value in the radio group
+  value: string | number;            // Value of this radio button
+  name: string;                      // Name for the radio group
+  inputId: string;                   // Unique ID for the radio button
+  label: string;                     // Label text
+  disabled?: boolean;                // Disable the radio button
+  invalid?: boolean;                 // Mark as invalid (for validation state)
+  size?: 'small' | 'medium' | 'large'; // Size of the radio button
 }>();
 
 const emits = defineEmits(['update:modelValue']);
 
-// Internal reactive variable to control radio button state
-const internalChecked = ref(props.modelValue ?? false);
-
-// Watch for external changes to modelValue and sync with internalChecked
-watch(() => props.modelValue, (newValue) => {
-  if (newValue !== internalChecked.value) {
-    internalChecked.value = newValue;
+// Compute size classes for input and dot based on the size prop
+const sizeClass = computed(() => {
+  switch (props.size) {
+    case 'small':
+      return 'w-4 h-4';
+    case 'large':
+      return 'w-7 h-7';
+    default:
+      return 'w-5 h-5'; // Default to medium
   }
 });
 
-// Update the internal state and emit the change
-const updateValue = (event: Event) => {
+const dotSizeClass = computed(() => {
+  switch (props.size) {
+    case 'small':
+      return 'inset-0.5 w-2 h-2';
+    case 'large':
+      return 'inset-1 w-5 h-5';
+    default:
+      return 'inset-1 w-3 h-3'; // Default to medium
+  }
+});
+
+// Emit the selected value when the radio button is changed
+const updateValue = () => {
   if (!props.disabled) {
-    const checked = (event.target as HTMLInputElement).checked;
-    internalChecked.value = checked;
-    emits('update:modelValue', checked ? props.value : null); // Emit value or null to deselect
+    emits('update:modelValue', props.value);
   }
 };
 </script>

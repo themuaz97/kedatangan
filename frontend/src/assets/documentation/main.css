@@ -7,25 +7,6 @@
   margin-bottom: 10px;
 }
 
-.doc-card {
-  background-color: #000000; /* Dark background color */
-  border-radius: 8px; /* Optional: Rounded corners */
-  padding: 16px; /* Optional: Padding for content inside */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Subtle shadow for elevation */
-  margin-bottom: 10px;
-}
-
-/* Code Block Styles Inside Card */
-.doc-card code {
-  display: block;
-  background-color: #000000; /* Slightly darker shade for code background */
-  padding: 8px 12px; /* Padding for the code block */
-  border-radius: 6px; 
-  font-family: 'Courier New', monospace; /* Monospace font for code */
-  font-size: 0.9rem; /* Slightly smaller font size */
-  overflow-x: auto; /* Horizontal scroll if code is too wide */
-}
-
 .doc-section-description>p i {
   background: var(--mark-background);
   border-radius: 6px;
@@ -34,4 +15,21 @@
   font-style: normal;
   font-weight: 500;
   padding: 2px 6px;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.3rem;
+  background-color: #7C3AED;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.copy-btn:hover {
+  background-color: #6b46c1;
 }

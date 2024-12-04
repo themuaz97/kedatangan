@@ -35,6 +35,11 @@
               <span />Checkbox
             </router-link>
           </li>
+          <li :class="{ active: isRouteActive('/components/radio') }">
+            <router-link to="/components/radio">
+              <span />Radio
+            </router-link>
+          </li>
         </ul>
       </li>
     </ul>

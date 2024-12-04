@@ -4,6 +4,52 @@ import { ref } from "vue";
 
 const isLoading = ref(false);
 
+const importCode = `
+import { Button } from '../components/Button';`;
+
+const labelCode = `
+<Button label="Button" size="medium" />`;
+
+const iconCode = `
+<Button icon="pi pi-plus" size="medium" />
+<Button label="Search" icon="pi pi-search" size="medium" />
+<Button label="User" icon="pi pi-user" size="medium" iconPosition="right" />`;
+
+const loadingCode = `
+<Button label="Loading" size="medium" loading />`;
+
+const variantCode = `
+<Button label="Primary" size="medium" variant="primary" />
+<Button label="Secondary" size="medium" variant="secondary" />
+<Button label="Info" size="medium" variant="info" />
+<Button label="Success" size="medium" variant="success" />
+<Button label="Warning" size="medium" variant="warning" />
+<Button label="Danger" size="medium" variant="danger" />`;
+
+const sizeCode = `
+<Button label="Small" size="small" />
+<Button label="Medium" size="medium" />
+<Button label="Large" size="large" />`;
+
+const disabledCode = `
+<Button label="Disabled" size="medium" disabled />`;
+
+const roundedCode = `
+<Button label="Rounded" size="medium" rounded />
+<Button label="Rounded" icon="pi pi-search" size="medium" rounded />
+<Button icon="pi pi-search" size="medium" rounded />`;
+
+const outlinedCode = `
+<Button label="Primary" size="medium" variant="primary" outlined />
+<Button label="Secondary" size="medium" variant="secondary" outlined />
+<Button label="Info" size="medium" variant="info" outlined />
+<Button label="Success" size="medium" variant="success" outlined />
+<Button label="Warning" size="medium" variant="warning" outlined />
+<Button label="Danger" size="medium" variant="danger" outlined />`;
+
+const badgeCode = `
+<Button label="Primary" size="medium" badge="7" />`;
+
 // Simulate a loading operation
 const load = () => {
   isLoading.value = true;
@@ -24,9 +70,7 @@ const load = () => {
       <!-- Import -->
       <div class="mb-6">
         <h1 class="text-xl mb-4 font-semibold">Import</h1>
-        <div class="doc-card">
-          <code> import Button from '../components/button'; </code>
-        </div>
+          <CodeBlock :code="importCode" language="typescript" />
       </div>
 
       <!-- Basic -->
@@ -43,11 +87,9 @@ const load = () => {
             <Button label="Button" size="medium" />
           </div>
         </div>
-        <div class="doc-card">
           <div>
-            <code> &lt;Button label="Button" size="medium"/&gt; </code>
+            <CodeBlock :code="labelCode" language="typescript" />
           </div>
-        </div>
       </div>
 
       <!-- Icons -->
@@ -71,17 +113,9 @@ const load = () => {
             />
           </div>
         </div>
-        <div class="doc-card">
           <div>
-            <code class="flex">
-              &lt;Button icon="pi pi-plus" size="medium" /&gt;<br />
-              &lt;Button label="Search" icon="pi pi-search" size="medium"
-              /&gt;<br />
-              &lt;Button label="User" icon="pi pi-user" size="medium"
-              iconPosition="right" /&gt;<br />
-            </code>
+            <CodeBlock :code="iconCode" language="typescript" />
           </div>
-        </div>
       </div>
 
       <!-- Loading -->
@@ -104,14 +138,9 @@ const load = () => {
             />
           </div>
         </div>
-        <div class="doc-card">
           <div>
-            <code class="flex">
-              &lt;Button label="Play" icon="pi pi-play" :loading="isLoading"
-              size="medium" @click="load" /&gt;<br />
-            </code>
+            <CodeBlock :code="loadingCode" language="typescript" />
           </div>
-        </div>
       </div>
       
       <!-- variant -->
@@ -133,18 +162,9 @@ const load = () => {
 
           </div>
         </div>
-        <div class="doc-card">
           <div>
-            <code class="flex">
-              &lt;Button label="Primary" size="medium" variant="primary" /&gt;<br />
-              &lt;Button label="Secondary" size="medium" variant="secondary" /&gt;<br />
-              &lt;Button label="Info" size="medium" variant="info" /&gt;<br />
-              &lt;Button label="Success" size="medium" variant="success" /&gt;<br />
-              &lt;Button label="Warning" size="medium" variant="warning" /&gt;<br />
-              &lt;Button label="Danger" size="medium" variant="danger" /&gt;<br />
-            </code>
+            <CodeBlock :code="variantCode" language="typescript" />
           </div>
-        </div>
       </div>
       
       <!-- size -->
@@ -162,13 +182,9 @@ const load = () => {
             <Button class="mr-3" label="Large" size="large" />
           </div>
         </div>
-        <div class="doc-card">
           <div>
-            <code class="flex">
-              &lt;Button label="Disabled" size="medium" disabled /&gt;<br />
-            </code>
+            <CodeBlock :code="sizeCode" language="typescript" />
           </div>
-        </div>
       </div>
       
       <!-- disabled -->
@@ -184,13 +200,9 @@ const load = () => {
             <Button label="Disabled" size="medium" disabled />
           </div>
         </div>
-        <div class="doc-card">
           <div>
-            <code class="flex">
-              &lt;Button label="Disabled" size="medium" disabled /&gt;<br />
-            </code>
+            <CodeBlock :code="disabledCode" language="typescript" />
           </div>
-        </div>
       </div>
       
       <!-- rounded -->
@@ -208,15 +220,9 @@ const load = () => {
             <Button icon="pi pi-search" size="medium" rounded />
           </div>
         </div>
-        <div class="doc-card">
           <div>
-            <code class="flex">
-              &lt;Button label="Rounded" size="medium" rounded /&gt;<br />
-              &lt;Button label="Rounded" icon="pi pi-search" size="medium" rounded /&gt;<br />
-              &lt;Button icon="pi pi-search" size="medium" rounded /&gt;<br />
-            </code>
+            <CodeBlock :code="roundedCode" language="typescript" />
           </div>
-        </div>
       </div>
       
       <!-- outlined -->
@@ -237,18 +243,9 @@ const load = () => {
             <Button label="Danger" size="medium" variant="danger" outlined />
           </div>
         </div>
-        <div class="doc-card">
           <div>
-            <code class="flex">
-              &lt;Button label="Primary" size="medium" variant="primary" outlined /&gt;<br />
-              &lt;Button label="Secondary" size="medium" variant="secondary" outlined /&gt;<br />
-              &lt;Button label="Info" size="medium" variant="info" outlined /&gt;<br />
-              &lt;Button label="Success" size="medium" variant="success" outlined /&gt;<br />
-              &lt;Button label="Warning" size="medium" variant="warning" outlined /&gt;<br />
-              &lt;Button label="Danger" size="medium" variant="danger" outlined /&gt;<br />
-            </code>
+            <CodeBlock :code="outlinedCode" language="typescript" />
           </div>
-        </div>
       </div>
       
       <!-- badge counter -->
@@ -264,13 +261,9 @@ const load = () => {
             <Button label="Primary" size="medium" badge="7" />
           </div>
         </div>
-        <div class="doc-card">
           <div>
-            <code class="flex">
-              &lt;Button label="Primary" size="medium" badge="7" /&gt;<br />
-            </code>
+            <CodeBlock :code="badgeCode" language="typescript" />
           </div>
-        </div>
       </div>
     </div>
   </Card>

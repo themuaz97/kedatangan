@@ -58,6 +58,11 @@ const routes = [
             name: 'checkbox',
             component: () => import('@/documentation/Checkbox.vue')
           },
+          {
+            path: 'radio',
+            name: 'radio',
+            component: () => import('@/documentation/Radio.vue')
+          },
         ],
         
       }
