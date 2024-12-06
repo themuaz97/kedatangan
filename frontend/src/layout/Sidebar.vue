@@ -40,6 +40,11 @@
               <span />Radio
             </router-link>
           </li>
+          <li :class="{ active: isRouteActive('/components/switch') }">
+            <router-link to="/components/switch">
+              <span />Switch
+            </router-link>
+          </li>
         </ul>
       </li>
     </ul>

@@ -11,15 +11,15 @@
         @change="toggle"
         class="sr-only peer"
         :disabled="disabled"
-        :aria-invalid="invalid"
+        :invalid="invalid"
       />
       <div
         :class="[
-          'w-10 h-6 rounded-full transition-all',
+          'w-10 h-6 rounded-full transition-all bg-gray-500 hover:bg-gray-600',
           disabled
             ? 'bg-gray-200 peer-focus:ring-0 cursor-default'
             : 'bg-gray-300 peer-focus:ring-2 peer-focus:ring-purple-500 peer-checked:bg-purple-500',
-          invalid ? 'border-red-500' : ''
+          invalid ? 'bg-red-500 hover:bg-red-600' : ''
         ]"
       ></div>
       <div

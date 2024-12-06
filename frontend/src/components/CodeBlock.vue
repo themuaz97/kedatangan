@@ -5,13 +5,12 @@
     <pre :class="`language-${language}`">
       <code ref="codeElement">{{ code }}</code>
     </pre>
-    <button
+    <Button
       @click="copyCode"
       class="copy-btn"
       :title="copyStatus"
-    >
-     <i class="pi pi-copy" /> {{ copyStatus === 'copied' ? 'Copied!' : 'Copy' }}
-    </button>
+      :icon="copyStatus === 'copied' ? 'pi pi-check' : 'pi pi-copy'"
+    />
   </div>
 </template>
 

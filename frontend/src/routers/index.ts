@@ -63,6 +63,11 @@ const routes = [
             name: 'radio',
             component: () => import('@/documentation/Radio.vue')
           },
+          {
+            path: 'switch',
+            name: 'switch',
+            component: () => import('@/documentation/Switch.vue')
+          },
         ],
         
       }

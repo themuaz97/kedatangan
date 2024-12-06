@@ -5,12 +5,12 @@
       <Button label="button" icon="pi pi-cog" size="small" variant="primary" />
     </div>
     <div>
-    <Checkbox v-model="isChecked" label="Accept Terms and Conditions" />
+    <Switch v-model="isChecked" label="Accept Terms and Conditions" />
     <p class="mt-4">Accepted: {{ isChecked }}</p>
     <Radio label="test" name="test" value="test" />
     <div class="p-4">
     <h1 class="mb-4 text-xl font-bold">Reusable Datepicker Example</h1>
-    <Datepicker v-model="selectedDate" icon="pi pi-calendar" selectionMode="single" placeholder="Pick a date" />
+    <Datepicker v-model="selectedDate" icon="pi pi-calendar" selectionMode="range" placeholder="Pick a date" />
   </div>
   </div>
   <div class="card flex flex-wrap justify-center gap-4">
@@ -29,6 +29,13 @@
   </div>
 
   <p class="mt-4">Selected Ingredients: {{ pizza }}</p>
+  </div>
+  <div>
+    <pre>
+      <code>
+        testing 1 2 3
+      </code>
+    </pre>
   </div>
 </template>
 <script setup lang="ts">

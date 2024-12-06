@@ -56,6 +56,7 @@ const invalidCode = `
 
 const ingredient = ref<string>("");
 const sizes = ref<string[]>([]);
+const checked = ref<boolean>(false);
 const invalid = ref<boolean>(false);
 </script>
 <template>
@@ -84,7 +85,7 @@ const invalid = ref<boolean>(false);
         </div>
         <div class="doc-card-sample">
           <div class="flex justify-center">
-            <Radio label="Radio Button" />
+            <Radio label="Radio Button" v-model="checked" />
           </div>
         </div>
         <div>
